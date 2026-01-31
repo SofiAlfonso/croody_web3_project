@@ -10,5 +10,8 @@ export * from "./marketplace";
 // Auction
 export * from "./auction";
 
+// Wallet
+export * from "./wallet";
+
 // UI
 export * from "./ui";

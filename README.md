@@ -1,6 +1,6 @@
 # NFT Marketplace
 
-Plataforma de marketplace de NFTs tipo eBay construida con Next.js, Solidity y Hardhat.
+Mini-plataforma Web3 tipo eBay donde los usuarios tienen una billetera con token propio, NFTs y un sistema de subastas.
 
 ## Stack Tecnologico
 
@@ -16,9 +16,22 @@ Plataforma de marketplace de NFTs tipo eBay construida con Next.js, Solidity y H
 
 ## Features
 
-- **Crear/Mintear NFTs**: Los usuarios pueden crear sus propios NFTs
-- **Compra Directa**: Comprar NFTs a precio fijo
-- **Subastas**: Sistema de pujas tipo eBay con temporizador
+### Wallet Digital
+- **Token propio**: ProjectToken (ERC-20) como moneda del marketplace
+- **Balance en tiempo real**: Actualizacion automatica del saldo
+- **Transferencias P2P**: Enviar tokens a otros usuarios
+- **Ver NFTs**: Lista de NFTs que posee el usuario
+- **Enviar NFTs**: Transferir NFTs directamente a otras direcciones
+
+### NFTs (ERC-721)
+- **Crear/Mintear**: Los usuarios pueden crear sus propios NFTs
+- **Ver coleccion**: Explorar NFTs disponibles
+- **Transferir**: Enviar NFTs a otros usuarios
+
+### Marketplace con Subastas
+- **Compra directa**: Comprar NFTs a precio fijo (pago con ProjectToken)
+- **Subastas tipo eBay**: Sistema de pujas con tiempo limite
+- **Finalizacion automatica**: Al terminar la subasta, el NFT cambia de dueno y el vendedor recibe los tokens
 
 ---
 
@@ -26,40 +39,115 @@ Plataforma de marketplace de NFTs tipo eBay construida con Next.js, Solidity y H
 
 ```
 nft-marketplace/
-├── contracts/              # Smart Contracts (Hardhat)
-│   ├── contracts/          # Archivos .sol
-│   ├── scripts/            # Scripts de deployment
-│   └── test/               # Tests de contratos
+├── contracts/                    # Smart Contracts (Hardhat)
+│   ├── contracts/
+│   │   ├── ProjectToken.sol      # Token ERC-20 propio
+│   │   ├── NFTCollection.sol     # Coleccion ERC-721
+│   │   ├── NFTMarketplace.sol    # Marketplace + Subastas
+│   │   └── interfaces/
+│   ├── scripts/
+│   │   └── deploy.ts
+│   └── test/
 │
 ├── src/
-│   ├── app/                # Paginas (Next.js App Router)
-│   ├── components/         # Componentes React
-│   ├── hooks/              # Custom hooks Web3
-│   ├── lib/                # Utilidades y configuracion
-│   ├── types/              # TypeScript types
-│   └── constants/          # Constantes (addresses, etc.)
+│   ├── app/                      # Paginas (Next.js App Router)
+│   │   ├── page.tsx              # Home
+│   │   ├── wallet/               # Billetera del usuario
+│   │   ├── explore/              # Explorar NFTs
+│   │   ├── create/               # Crear NFT
+│   │   ├── nft/[id]/             # Detalle NFT
+│   │   ├── auction/[id]/         # Detalle subasta
+│   │   └── profile/[address]/    # Perfil usuario
+│   │
+│   ├── components/
+│   │   ├── layout/               # Header, Footer, Sidebar
+│   │   ├── wallet/               # TokenBalance, SendTokenForm, SendNFTModal, MyNFTsGrid
+│   │   ├── nft/                  # NFTCard, NFTGrid, NFTDetails, CreateNFTForm
+│   │   ├── marketplace/          # ListingCard, BuyButton, PriceDisplay
+│   │   ├── auction/              # AuctionCard, BidForm, BidHistory, AuctionTimer
+│   │   └── ui/                   # Button, Input, Modal, Card
+│   │
+│   ├── hooks/
+│   │   ├── useProjectToken.ts    # Balance, transfer, approve
+│   │   ├── useNFTCollection.ts   # Mint, transfer, ownerOf
+│   │   ├── useNFTMarketplace.ts  # Listings, compras
+│   │   ├── useAuction.ts         # Subastas, pujas
+│   │   ├── useWallet.ts          # Estado consolidado de wallet
+│   │   └── useIPFS.ts            # Subir archivos a IPFS
+│   │
+│   ├── lib/                      # wagmi config, contracts, utils
+│   ├── types/                    # TypeScript types
+│   └── constants/
 │
-└── public/                 # Archivos estaticos
+└── public/
+```
+
+---
+
+## Smart Contracts
+
+### ProjectToken.sol (ERC-20)
+Token propio del proyecto usado como moneda de pago.
+
+**Funciones principales:**
+- `transfer(address to, uint256 amount)` - Enviar tokens P2P
+- `approve(address spender, uint256 amount)` - Aprobar gasto (requerido antes de comprar/pujar)
+- `balanceOf(address account)` - Consultar balance
+
+### NFTCollection.sol (ERC-721)
+Coleccion de NFTs del marketplace.
+
+**Funciones principales:**
+- `mint(address to, string tokenURI)` - Crear nuevo NFT
+- `transferFrom(address from, address to, uint256 tokenId)` - Transferir NFT
+- `approve(address to, uint256 tokenId)` - Aprobar transferencia
+
+### NFTMarketplace.sol
+Marketplace con listings y subastas. **Usa ProjectToken como pago, NO ETH.**
+
+**Listings (precio fijo):**
+- `listItem(address nft, uint256 tokenId, uint256 price)` - Listar NFT
+- `buyItem(uint256 listingId)` - Comprar (requiere approve de tokens)
+- `cancelListing(uint256 listingId)` - Cancelar
+
+**Subastas:**
+- `createAuction(address nft, uint256 tokenId, uint256 startPrice, uint256 duration)` - Crear subasta
+- `placeBid(uint256 auctionId, uint256 amount)` - Pujar (requiere approve de tokens)
+- `endAuction(uint256 auctionId)` - Finalizar (transfiere NFT y tokens)
+
+---
+
+## Flujo de Compra/Subasta
+
+```
+COMPRA DIRECTA:
+1. Comprador llama approve(marketplace, precio) en ProjectToken
+2. Comprador llama buyItem(listingId) en Marketplace
+3. Marketplace hace transferFrom de tokens (comprador -> vendedor)
+4. Marketplace hace transferFrom de NFT (vendedor -> comprador)
+
+SUBASTA:
+1. Vendedor aprueba NFT al marketplace y crea subasta
+2. Pujador llama approve(marketplace, cantidad) en ProjectToken
+3. Pujador llama placeBid(auctionId, cantidad)
+4. Si hay puja anterior, se devuelven tokens al pujador anterior
+5. Al terminar tiempo, cualquiera puede llamar endAuction()
+6. NFT va al ganador, tokens van al vendedor
 ```
 
 ---
 
 ## Instalacion
 
-### 1. Clonar el repositorio
+### 1. Clonar e instalar
 
 ```bash
 git clone <repo-url>
 cd nft-marketplace
-```
-
-### 2. Instalar dependencias del frontend
-
-```bash
 npm install
 ```
 
-### 3. Instalar dependencias de contratos
+### 2. Instalar dependencias de contratos
 
 ```bash
 cd contracts
@@ -67,140 +155,64 @@ npm install
 cd ..
 ```
 
-### 4. Configurar variables de entorno
+### 3. Configurar variables de entorno
 
 ```bash
-# En la raiz del proyecto
 cp .env.example .env.local
-
-# En la carpeta contracts
 cp contracts/.env.example contracts/.env
 ```
 
-### 5. Compilar contratos
+### 4. Compilar y testear contratos
 
 ```bash
 cd contracts
 npx hardhat compile
-```
-
-### 6. Ejecutar tests de contratos
-
-```bash
-cd contracts
 npx hardhat test
 ```
 
-### 7. Iniciar servidor de desarrollo
+### 5. Deploy local (desarrollo)
+
+```bash
+# Terminal 1: Nodo local
+cd contracts
+npx hardhat node
+
+# Terminal 2: Deploy
+npx hardhat run scripts/deploy.ts --network localhost
+```
+
+### 6. Iniciar frontend
 
 ```bash
 npm run dev
 ```
 
-Abrir [http://localhost:3000](http://localhost:3000)
-
 ---
 
-## Smart Contracts
-
-### NFTCollection.sol
-Contrato ERC-721 para crear y gestionar NFTs.
-
-**Funciones principales:**
-- `mint(address to, string tokenURI)` - Crear nuevo NFT
-- `tokenURI(uint256 tokenId)` - Obtener metadata del NFT
-- `approve(address to, uint256 tokenId)` - Aprobar transferencia
-
-### NFTMarketplace.sol
-Contrato principal del marketplace.
-
-**Funciones principales:**
-- `listItem(address nft, uint256 tokenId, uint256 price)` - Listar NFT a precio fijo
-- `buyItem(address nft, uint256 tokenId)` - Comprar NFT
-- `createAuction(address nft, uint256 tokenId, uint256 startPrice, uint256 duration)` - Crear subasta
-- `placeBid(uint256 auctionId)` - Hacer puja
-- `endAuction(uint256 auctionId)` - Finalizar subasta
-
----
-
-## Paginas del Frontend
+## Paginas
 
 | Ruta | Descripcion |
 |------|-------------|
-| `/` | Pagina principal con NFTs destacados |
+| `/` | Home con NFTs destacados |
+| `/wallet` | Billetera: balance, enviar tokens, mis NFTs |
 | `/explore` | Explorar todos los NFTs |
 | `/create` | Crear/Mintear nuevo NFT |
-| `/nft/[id]` | Detalle de un NFT |
-| `/auction/[id]` | Detalle de una subasta |
+| `/nft/[id]` | Detalle de NFT con opcion de compra |
+| `/auction/[id]` | Detalle de subasta con pujas |
 | `/profile/[address]` | Perfil de usuario |
 
 ---
 
-## Componentes Principales
-
-### Layout
-- `Header.tsx` - Navbar con boton de conectar wallet
-- `Footer.tsx` - Footer del sitio
-- `Sidebar.tsx` - Navegacion lateral
-
-### NFT
-- `NFTCard.tsx` - Tarjeta de NFT
-- `NFTGrid.tsx` - Grid de NFTs
-- `NFTDetails.tsx` - Vista detallada
-- `CreateNFTForm.tsx` - Formulario de creacion
-
-### Marketplace
-- `ListingCard.tsx` - Tarjeta de listing
-- `BuyButton.tsx` - Boton de compra
-- `PriceDisplay.tsx` - Mostrar precio en ETH
-
-### Auction
-- `AuctionCard.tsx` - Tarjeta de subasta
-- `BidForm.tsx` - Formulario para pujar
-- `BidHistory.tsx` - Historial de pujas
-- `AuctionTimer.tsx` - Cuenta regresiva
-
----
-
-## Hooks Personalizados
+## Hooks
 
 | Hook | Descripcion |
 |------|-------------|
-| `useNFTMarketplace` | Interactuar con el contrato del marketplace |
-| `useNFTCollection` | Interactuar con el contrato de NFTs |
-| `useAuction` | Gestionar subastas |
-| `useIPFS` | Subir archivos a IPFS |
-
----
-
-## Redes Soportadas
-
-| Red | Chain ID | Uso |
-|-----|----------|-----|
-| Localhost | 31337 | Desarrollo local |
-| Sepolia | 11155111 | Testnet |
-| Ethereum | 1 | Mainnet |
-
----
-
-## Scripts Disponibles
-
-### Frontend
-```bash
-npm run dev       # Servidor de desarrollo
-npm run build     # Build de produccion
-npm run start     # Iniciar build
-npm run lint      # Ejecutar linter
-```
-
-### Contracts
-```bash
-npx hardhat compile              # Compilar contratos
-npx hardhat test                 # Ejecutar tests
-npx hardhat node                 # Nodo local
-npx hardhat run scripts/deploy.ts --network localhost  # Deploy local
-npx hardhat run scripts/deploy.ts --network sepolia    # Deploy testnet
-```
+| `useProjectToken` | Balance, transfer, approve del token ERC-20 |
+| `useNFTCollection` | Mint, transfer, ownerOf de NFTs |
+| `useNFTMarketplace` | Crear listings, comprar NFTs |
+| `useAuction` | Crear subastas, pujar, finalizar |
+| `useWallet` | Estado consolidado (tokens + NFTs + conexion) |
+| `useIPFS` | Subir imagenes y metadata a IPFS |
 
 ---
 
@@ -208,22 +220,30 @@ npx hardhat run scripts/deploy.ts --network sepolia    # Deploy testnet
 
 ### Frontend (.env.local)
 ```
-NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=   # ID de WalletConnect
-NEXT_PUBLIC_MARKETPLACE_ADDRESS=          # Address del marketplace
-NEXT_PUBLIC_NFT_COLLECTION_ADDRESS=       # Address de la coleccion
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=
+NEXT_PUBLIC_PROJECT_TOKEN_ADDRESS=
+NEXT_PUBLIC_NFT_COLLECTION_ADDRESS=
+NEXT_PUBLIC_MARKETPLACE_ADDRESS=
 ```
 
 ### Contracts (.env)
 ```
-PRIVATE_KEY=                # Private key para deploy
-ETHERSCAN_API_KEY=          # Para verificar contratos
-SEPOLIA_RPC_URL=            # RPC de Sepolia
-MAINNET_RPC_URL=            # RPC de Mainnet
+PRIVATE_KEY=
+ETHERSCAN_API_KEY=
+SEPOLIA_RPC_URL=
 ```
+
+---
+
+## Seguridad
+
+- **ReentrancyGuard**: Proteccion contra ataques de reentrancia
+- **Validaciones**: Owner del NFT, aprobaciones, tiempos de subasta
+- **Devolucion de pujas**: Tokens devueltos a pujadores perdedores
+- **No ETH directo**: Uso de ERC-20 con approve pattern
 
 ---
 
 ## Licencia
 
 MIT
-"# croody_web3_project" 

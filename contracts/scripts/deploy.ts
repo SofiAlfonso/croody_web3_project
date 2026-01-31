@@ -4,10 +4,22 @@ async function main() {
   console.log("Deploying contracts...");
 
   // TODO: Implementar deployment
-  // 1. Deploy NFTCollection
-  // 2. Deploy NFTMarketplace
-  // 3. Configurar permisos si es necesario
-  // 4. Guardar addresses en archivo de configuracion
+  //
+  // ORDEN DE DEPLOYMENT:
+  // 1. Deploy ProjectToken (ERC-20)
+  //    - Configurar supply inicial
+  //
+  // 2. Deploy NFTCollection (ERC-721)
+  //    - Configurar nombre y simbolo
+  //
+  // 3. Deploy NFTMarketplace
+  //    - Pasar address del ProjectToken como payment token
+  //    - Configurar comision de la plataforma
+  //
+  // 4. (Opcional) Mint tokens iniciales para testing
+  //
+  // 5. Guardar addresses en archivo de configuracion
+  //    - Para que el frontend pueda usarlos
 
   console.log("Deployment complete!");
 }
