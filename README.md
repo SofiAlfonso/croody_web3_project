@@ -142,7 +142,7 @@ SUBASTA:
 ### 1. Clonar e instalar
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/SofiAlfonso/croody_web3_project
 cd nft-marketplace
 npm install
 ```
