@@ -49,7 +49,7 @@ nft-marketplace/
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/SofiAlfonso/croody_web3_project
 cd nft-marketplace
 ```
 
