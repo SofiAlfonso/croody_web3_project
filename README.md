@@ -4,15 +4,38 @@ Mini-plataforma Web3 tipo eBay donde los usuarios tienen una billetera con token
 
 ## Stack Tecnologico
 
+### Frontend
+
+| Tecnologia | Version | Por que la usamos |
+|------------|---------|-------------------|
+| **Next.js** | 16 | Framework de React con App Router, SSR y routing basado en archivos. Nos permite estructurar las paginas de la DApp de forma clara y tener buen rendimiento de carga |
+| **React** | 19 | Libreria base para construir la interfaz con componentes reutilizables y manejo de estado reactivo |
+| **TypeScript** | 5 | Tipado estatico para evitar errores en tiempo de desarrollo, especialmente util al trabajar con tipos de blockchain (addresses, uint256, etc.) |
+| **Tailwind CSS** | 4 | Framework de estilos utilitario que permite prototipar rapido sin escribir CSS aparte |
+
+### Web3 / Blockchain
+
+| Tecnologia | Version | Por que la usamos |
+|------------|---------|-------------------|
+| **Solidity** | 0.8.24 | Lenguaje estandar para escribir smart contracts en Ethereum. Tiene la mayor comunidad, documentacion y herramientas disponibles |
+| **Hardhat** | 2.19 | Entorno de desarrollo que nos permite compilar, probar y desplegar los contratos desde un solo lugar. Incluye red local para pruebas sin gastar gas real |
+| **OpenZeppelin** | 5.0 | Libreria de contratos auditados y probados (ERC-20, ERC-721, ReentrancyGuard). Nos evita escribir logica critica de seguridad desde cero |
+| **Wagmi + Viem** | - | SDK para conectar el frontend con la blockchain: leer datos de contratos, enviar transacciones y escuchar eventos |
+| **RainbowKit** | - | Componente que maneja la conexion de wallets externas (MetaMask, WalletConnect) con una interfaz lista para usar |
+
+### Backend y almacenamiento
+
+| Tecnologia | Uso | Por que la usamos |
+|------------|-----|-------------------|
+| **Firebase / Supabase** | Base de datos para perfiles de usuario y datos off-chain | Necesitamos almacenar informacion que no va en la blockchain (perfiles, preferencias, historial de actividad). Ambas opciones ofrecen auth, base de datos y hosting sin necesidad de levantar un servidor propio |
+| **IPFS** | Almacenamiento de metadata e imagenes de NFTs | Los archivos de los NFTs no van en la blockchain porque seria muy costoso en gas. IPFS es descentralizado y gratuito |
+
+### Infraestructura
+
 | Tecnologia | Uso |
 |------------|-----|
-| Next.js 14 | Frontend con App Router |
-| Solidity | Smart Contracts |
-| Hardhat | Desarrollo y testing de contratos |
-| RainbowKit | Conexion de wallet |
-| wagmi + viem | Interaccion con blockchain |
-| Tailwind CSS | Estilos |
-| TypeScript | Tipado estatico |
+| **Ethereum Sepolia Testnet** | Red de pruebas donde desplegamos los contratos. Funciona igual que Mainnet pero sin costos reales |
+| **Vercel** | Deploy del frontend (Next.js se despliega nativamente en Vercel) |
 
 ## Features
 
