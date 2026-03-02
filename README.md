@@ -47,6 +47,7 @@ Mini-plataforma Web3 tipo eBay donde los usuarios tienen una billetera con token
 - **Enviar NFTs**: Transferir NFTs directamente a otras direcciones
 
 ### NFTs (ERC-721)
+- **Crear/Mintear**: Los usuarios pueden crear sus propios NFTs
 - **Ver coleccion**: Explorar NFTs disponibles
 - **Transferir**: Enviar NFTs a otros usuarios
 
@@ -59,37 +60,49 @@ Mini-plataforma Web3 tipo eBay donde los usuarios tienen una billetera con token
 
 ## Estructura del Proyecto
 
-```text
-croody_web3_project/
-├── .gitignore
-├── eslint.config.mjs
-├── next.config.ts
-├── package.json
-├── README.md
-├── public/                      # Assets estaticos (imagenes, icons, etc.)
-├── src/
-│   ├── app/                     # Rutas y paginas (Next.js App Router)
-│   ├── components/              # Componentes UI reutilizables
-│   ├── hooks/                   # Custom hooks (wallet, contracts, estado)
-│   ├── lib/                     # Config Web3, ABIs, utilidades
-│   └── styles/                  # Estilos globales/tema
-├── contracts/
-│   ├── hardhat.config.ts        # Configuracion de Hardhat
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── contracts/               # Smart contracts Solidity
-│   │   ├── NFTCollection.sol
-│   │   ├── NFTMarketplace.sol
-│   │   └── ...
-│   ├── scripts/                 # Scripts de deploy/migraciones
-│   └── test/                    # Tests de contratos
-└── .next/                       # Build/cache generado por Next.js
 ```
-
-**Referencias rapidas:**
-- Frontend: [src/app](src/app), [src/components](src/components), [src/hooks](src/hooks), [src/lib](src/lib), [src/styles](src/styles)
-- Contratos: [contracts/contracts/NFTCollection.sol](contracts/contracts/NFTCollection.sol), [contracts/contracts/NFTMarketplace.sol](contracts/contracts/NFTMarketplace.sol), [contracts/hardhat.config.ts](contracts/hardhat.config.ts)
-- Config principal: [next.config.ts](next.config.ts), [package.json](package.json), [tsconfig.json](tsconfig.json)
+croody_web3_project/
+├── contracts/                     # Smart Contracts (Hardhat)
+│   ├── contracts/
+│   │   ├── ProjectToken.sol       # Token ERC-20
+│   │   ├── NFTCollection.sol      # Coleccion ERC-721
+│   │   ├── NFTMarketplace.sol     # Marketplace + subastas
+│   │   └── interfaces/
+│   ├── scripts/
+│   │   └── deploy.ts
+│   ├── test/
+│   ├── hardhat.config.ts
+│   └── package.json
+├── public/
+├── src/
+│   ├── app/                       # Paginas (Next.js App Router)
+│   │   ├── page.tsx               # Home
+│   │   ├── dashboard/page.tsx     # Dashboard principal
+│   │   ├── send/page.tsx          # Envio de tokens
+│   │   ├── nft/[id]/page.tsx      # Detalle de NFT
+│   │   └── auction/[id]/page.tsx  # Detalle de subasta
+│   ├── components/
+│   │   ├── HomeClient.tsx
+│   │   ├── Dashboard.tsx
+│   │   ├── SendTokens.tsx
+│   │   ├── NftDetail.tsx
+│   │   └── AuctionDetail.tsx
+│   ├── hooks/
+│   │   ├── useWallet.ts
+│   │   ├── useNfts.ts
+│   │   ├── useAuctions.ts
+│   │   ├── useCreateAuction.ts
+│   │   ├── usePlaceBid.ts
+│   │   ├── useSendTokens.ts
+│   │   ├── useTransferNft.ts
+│   │   └── useMarketplaceData.ts
+│   ├── lib/
+│   │   └── mock-data.ts
+│   └── styles/
+│       └── theme.css
+├── package.json
+└── README.md
+```
 
 ---
 
@@ -97,28 +110,35 @@ croody_web3_project/
 
 ### Vista General
 
-```text
-┌──────────────────────────────────────────────────────────────┐
-│                        FRONTEND (Next.js)                   │
-│  UI (App Router) + Hooks + Estado + Wallet Connection       │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ wagmi/viem + RainbowKit
-                               ▼
-┌──────────────────────────────────────────────────────────────┐
-│                   BLOCKCHAIN (Sepolia/Local)                │
-│  ProjectToken (ERC-20) + NFTCollection (ERC-721) + Market   │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ tokenURI / metadata
-                               ▼
-┌──────────────────────────────────────────────────────────────┐
-│                 ALMACENAMIENTO OFF-CHAIN                    │
-│   IPFS (imagenes + metadata) + Firebase/Supabase (perfiles) │
-└──────────────────────────────────────────────────────────────┘
+```
+┌──────────────────────────┐
+│      Usuario Web3        │
+└─────────────┬────────────┘
+              ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│ Frontend Next.js (App Router)                                       │
+│ - / (HomeClient)                                                    │
+│ - /dashboard (Dashboard)                                            │
+│ - /send, /nft/[id], /auction/[id]                                  │
+└──────────────────────────┬───────────────────────────────────────────┘
+                           ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│ Capa de Hooks                                                       │
+│ - useWallet, useNfts, useAuctions                                   │
+│ - useCreateAuction, usePlaceBid, useSendTokens, useTransferNft      │
+└──────────────────────────┬───────────────────────────────────────────┘
+                           ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│ Datos                                                               │
+│ - Estado mock en src/lib/mock-data.ts                               │
+│ - Contratos Solidity en contracts/contracts/                        │
+│   (ProjectToken, NFTCollection, NFTMarketplace)                     │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Relacion entre Smart Contracts
 
-```text
+```
 ┌─────────────────────────────────────────────────────────────────┐
 │                      NFTMarketplace                              │
 │  (Contrato Central - Orquesta todas las operaciones)            │
@@ -138,7 +158,7 @@ croody_web3_project/
 
 ### Flujo de Datos - Compra Directa
 
-```text
+```
 ┌────────┐         ┌────────────┐         ┌─────────────┐         ┌────────┐
 │Comprador│        │ProjectToken│         │NFTMarketplace│        │Vendedor│
 └────┬───┘         └─────┬──────┘         └──────┬──────┘         └───┬────┘
@@ -162,7 +182,7 @@ croody_web3_project/
 
 ### Flujo de Datos - Subasta
 
-```text
+```
 ┌────────┐    ┌────────┐    ┌────────────┐    ┌─────────────┐    ┌────────┐
 │Vendedor│    │Pujador1│    │ProjectToken│    │NFTMarketplace│   │Pujador2│
 └───┬────┘    └───┬────┘    └─────┬──────┘    └──────┬──────┘    └───┬────┘
@@ -201,29 +221,197 @@ croody_web3_project/
 
 ### Componentes del Frontend
 
-- **Layout global** ([src/app](src/app)): estructura base, navbar/footer y providers.
-- **Paginas de marketplace** ([src/app](src/app)): listado de NFTs, detalle, compra y subastas.
-- **Componentes UI** ([src/components](src/components)): cards de NFT, formularios, tablas de pujas, botones de accion.
-- **Hooks Web3** ([src/hooks](src/hooks)): conexion de wallet, lectura de balances, llamados a contratos y manejo de tx.
-- **Capa de utilidades** ([src/lib](src/lib)): ABIs, direcciones de contratos, helpers de formato y configuracion wagmi/viem.
-- **Estilos** ([src/styles](src/styles)): tema visual y estilos globales.
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│ src/components                                                       │
+├──────────────────────────────────────────────────────────────────────┤
+│ HomeClient.tsx   -> Landing y conexion de wallet                    │
+│ Dashboard.tsx    -> Vista principal (balance, NFTs, subastas)       │
+│ SendTokens.tsx   -> Flujo de envio de tokens CRD                    │
+│ NftDetail.tsx    -> Detalle del NFT + acciones (subastar/transferir)│
+│ AuctionDetail.tsx-> Detalle de subasta + puja                       │
+└──────────────────────────────────────────────────────────────────────┘
+```
 
 ### Mapa de Navegacion
 
-```text
-/ (Home)
-├─ /marketplace
-│  ├─ /marketplace/[listingId]      # Detalle y compra directa
-│  └─ /marketplace/create           # Listar NFT
-├─ /auctions
-│  ├─ /auctions/[auctionId]         # Detalle y pujas
-│  └─ /auctions/create              # Crear subasta
-├─ /wallet                          # Balance, transferencias, NFTs propios
-├─ /collection                      # Explorar NFTs (ERC-721)
-└─ /profile                         # Perfil/historial (off-chain)
+```
+                 ┌──────────────────────┐
+                 │   Home ( / )         │
+                 │   HomeClient.tsx     │
+                 └──────────┬───────────┘
+                            │ Connect Wallet
+                            ▼
+                 ┌──────────────────────┐
+                 │ Dashboard (/dashboard)│
+                 │ Dashboard.tsx         │
+                 └───────┬──────────────┘
+                         │
+           ┌─────────────┼──────────────┬──────────────────┐
+           ▼             ▼              ▼                  ▼
+   /send            /nft/[id]      /auction/[id]      (volver a /)
+ SendTokens.tsx     NftDetail.tsx   AuctionDetail.tsx   al desconectar
 ```
 
-> Nota: ajusta los paths exactos segun las rutas reales definidas en [src/app](src/app).
+---
+
+## Smart Contracts
+
+### ProjectToken.sol (ERC-20)
+Token propio del proyecto usado como moneda de pago.
+
+**Funciones principales:**
+- `transfer(address to, uint256 amount)` - Enviar tokens P2P
+- `approve(address spender, uint256 amount)` - Aprobar gasto (requerido antes de comprar/pujar)
+- `balanceOf(address account)` - Consultar balance
+
+### NFTCollection.sol (ERC-721)
+Coleccion de NFTs del marketplace.
+
+**Funciones principales:**
+- `mint(address to, string tokenURI)` - Crear nuevo NFT
+- `transferFrom(address from, address to, uint256 tokenId)` - Transferir NFT
+- `approve(address to, uint256 tokenId)` - Aprobar transferencia
+
+### NFTMarketplace.sol
+Marketplace con listings y subastas. **Usa ProjectToken como pago, NO ETH.**
+
+**Listings (precio fijo):**
+- `listItem(address nft, uint256 tokenId, uint256 price)` - Listar NFT
+- `buyItem(uint256 listingId)` - Comprar (requiere approve de tokens)
+- `cancelListing(uint256 listingId)` - Cancelar
+
+**Subastas:**
+- `createAuction(address nft, uint256 tokenId, uint256 startPrice, uint256 duration)` - Crear subasta
+- `placeBid(uint256 auctionId, uint256 amount)` - Pujar (requiere approve de tokens)
+- `endAuction(uint256 auctionId)` - Finalizar (transfiere NFT y tokens)
 
 ---
-<!-- ...existing code... -->
+
+## Flujo de Compra/Subasta
+
+```
+COMPRA DIRECTA:
+1. Comprador llama approve(marketplace, precio) en ProjectToken
+2. Comprador llama buyItem(listingId) en Marketplace
+3. Marketplace hace transferFrom de tokens (comprador -> vendedor)
+4. Marketplace hace transferFrom de NFT (vendedor -> comprador)
+
+SUBASTA:
+1. Vendedor aprueba NFT al marketplace y crea subasta
+2. Pujador llama approve(marketplace, cantidad) en ProjectToken
+3. Pujador llama placeBid(auctionId, cantidad)
+4. Si hay puja anterior, se devuelven tokens al pujador anterior
+5. Al terminar tiempo, cualquiera puede llamar endAuction()
+6. NFT va al ganador, tokens van al vendedor
+```
+
+---
+
+## Instalacion
+
+### 1. Clonar e instalar
+
+```bash
+git clone https://github.com/SofiAlfonso/croody_web3_project
+cd croody_web3_project
+npm install
+```
+
+### 2. Instalar dependencias de contratos
+
+```bash
+cd contracts
+npm install
+cd ..
+```
+
+### 3. Configurar variables de entorno
+
+> Actualmente no hay archivos `.env.example` en el repo. Crea los archivos manualmente si necesitas llaves/RPC para pruebas en red.
+
+### 4. Compilar y testear contratos
+
+```bash
+cd contracts
+npx hardhat compile
+npx hardhat test
+```
+
+### 5. Deploy local (desarrollo)
+
+```bash
+# Terminal 1: Nodo local
+cd contracts
+npx hardhat node
+
+# Terminal 2: Deploy
+npx hardhat run scripts/deploy.ts --network localhost
+```
+
+### 6. Iniciar frontend
+
+```bash
+npm run dev
+```
+
+---
+
+## Paginas
+
+| Ruta | Descripcion |
+|------|-------------|
+| `/` | Home y conexion de wallet |
+| `/dashboard` | Panel principal: balance, NFTs y subastas |
+| `/send` | Envio de tokens CRD |
+| `/nft/[id]` | Detalle de NFT y acciones del owner |
+| `/auction/[id]` | Detalle de subasta y pujas |
+
+---
+
+## Hooks
+
+| Hook | Descripcion |
+|------|-------------|
+| `useWallet` | Estado de conexion de wallet (connect/disconnect) |
+| `useNfts` | Lectura de NFTs del usuario y detalle por id (mock) |
+| `useAuctions` | Lectura de subastas live, propias y por id (mock) |
+| `useCreateAuction` | Crear subasta (placeholder) |
+| `usePlaceBid` | Enviar puja (placeholder) |
+| `useSendTokens` | Envio de tokens (placeholder) |
+| `useTransferNft` | Transferencia de NFT (placeholder) |
+| `useMarketplaceData` | Re-export de hooks de `useNfts` y `useAuctions` |
+
+---
+
+## Variables de Entorno
+
+### Frontend (.env.local)
+```
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=
+NEXT_PUBLIC_PROJECT_TOKEN_ADDRESS=
+NEXT_PUBLIC_NFT_COLLECTION_ADDRESS=
+NEXT_PUBLIC_MARKETPLACE_ADDRESS=
+```
+
+### Contracts (.env)
+```
+PRIVATE_KEY=
+ETHERSCAN_API_KEY=
+SEPOLIA_RPC_URL=
+```
+
+---
+
+## Seguridad
+
+- **ReentrancyGuard**: Proteccion contra ataques de reentrancia
+- **Validaciones**: Owner del NFT, aprobaciones, tiempos de subasta
+- **Devolucion de pujas**: Tokens devueltos a pujadores perdedores
+- **No ETH directo**: Uso de ERC-20 con approve pattern
+
+---
+
+## Licencia
+
+MIT
