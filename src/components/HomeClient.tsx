@@ -1,22 +1,26 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Layers, Lock, Shield } from "lucide-react";
-import { useWallet } from "@/hooks/useWallet";
+import { useWalletContext } from "@/context/WalletContext";
 
-type Props = {
-  initialWalletAddress?: string | null;
-};
-
-export default function HomeClient({ initialWalletAddress = null }: Props) {
+export default function HomeClient() {
   const router = useRouter();
-  const { isConnecting, connectWallet } = useWallet({ initialWalletAddress });
+  const { isConnected, isConnecting, connectWallet } = useWalletContext();
+
+  // If already connected, redirect to dashboard
+  useEffect(() => {
+    if (isConnected) {
+      router.push("/dashboard");
+    }
+  }, [isConnected, router]);
 
   const onConnectClick = async () => {
-    await connectWallet();
-    // Foundation behavior: navigate to dashboard.
-    // TODO: Replace with protected route/session-aware flow after real auth/wallet integration.
-    router.push("/dashboard");
+    const address = await connectWallet();
+    if (address) {
+      router.push("/dashboard");
+    }
   };
 
   return (

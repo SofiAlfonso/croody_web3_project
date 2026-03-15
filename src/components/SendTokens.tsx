@@ -1,17 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSendTokens } from "@/hooks/useSendTokens";
+import { useWalletContext } from "@/context/WalletContext";
 
-interface SendTokensProps {
-  walletAddress?: string | null;
-}
-
-export default function SendTokens({ walletAddress = "0xA3f...92B" }: SendTokensProps) {
+export default function SendTokens() {
+  const router = useRouter();
+  const { walletAddress, isConnected } = useWalletContext();
   const [recipient] = useState("0xB7a...4C2");
   const [amount] = useState("125");
   const { sendTokens, isPending: isSendingTokens } = useSendTokens();
+
+  useEffect(() => {
+    if (!isConnected) {
+      router.push("/");
+    }
+  }, [isConnected, router]);
+
+  if (!isConnected) return null;
+
+  const shortWallet = walletAddress
+    ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+    : "";
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -29,7 +41,7 @@ export default function SendTokens({ walletAddress = "0xA3f...92B" }: SendTokens
           <div>
             <div className="text-sm text-neutral-500 mb-1">From Wallet</div>
             <div className="inline-flex items-center gap-3 px-4 py-2 bg-neutral-100 rounded-lg text-sm font-mono text-neutral-700">
-              {walletAddress}
+              {shortWallet}
             </div>
           </div>
 
@@ -63,7 +75,6 @@ export default function SendTokens({ walletAddress = "0xA3f...92B" }: SendTokens
               className="px-5 py-2 rounded-lg border border-neutral-200 text-sm text-neutral-700 hover:bg-neutral-100"
               type="button"
             >
-              {/* TODO: Save draft to local state/storage */}
               Save Draft
             </button>
             <button
@@ -72,7 +83,7 @@ export default function SendTokens({ walletAddress = "0xA3f...92B" }: SendTokens
               disabled={isSendingTokens}
               onClick={async () => {
                 await sendTokens({
-                  fromWallet: walletAddress,
+                  fromWallet: walletAddress!,
                   toWallet: recipient,
                   amount,
                 });

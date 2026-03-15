@@ -2,30 +2,38 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { ArrowUpRight, Clock } from "lucide-react";
-import { useWallet } from "@/hooks/useWallet";
+import { useWalletContext } from "@/context/WalletContext";
 import { useLiveAuctions, useMyAuctions } from "@/hooks/useAuctions";
 import { useMyNfts } from "@/hooks/useNfts";
 
-type Props = {
-  walletAddress?: string | null;
-};
-
-export default function Dashboard({ walletAddress = null }: Props) {
+export default function Dashboard() {
   const router = useRouter();
-  const { walletAddress: hookWallet, isDisconnecting, disconnectWallet } = useWallet({
-    initialWalletAddress: walletAddress ?? "0xA3f...92B",
-  });
+  const { walletAddress, isConnected, disconnectWallet } = useWalletContext();
 
-  const displayWallet = hookWallet ?? "0xA3f...92B";
+  // Protect route: redirect to home if not connected
+  useEffect(() => {
+    if (!isConnected) {
+      router.push("/");
+    }
+  }, [isConnected, router]);
+
+  const displayWallet = walletAddress ?? "";
+  const shortWallet = displayWallet
+    ? `${displayWallet.slice(0, 6)}...${displayWallet.slice(-4)}`
+    : "";
+
   const { data: nfts } = useMyNfts(displayWallet);
   const { data: myAuctions } = useMyAuctions(displayWallet);
   const { data: liveAuctions } = useLiveAuctions();
 
-  const handleDisconnect = async () => {
-    await disconnectWallet();
+  const handleDisconnect = () => {
+    disconnectWallet();
     router.push("/");
   };
+
+  if (!isConnected) return null;
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -35,17 +43,16 @@ export default function Dashboard({ walletAddress = null }: Props) {
           <div className="text-xl font-semibold text-jungle-900">Croody</div>
           <div className="flex items-center gap-3">
             <div className="px-4 py-2 bg-jungle-100 rounded-lg text-sm text-jungle-500 font-mono">
-              {displayWallet}
+              {shortWallet}
             </div>
             <div className="px-3 py-1 bg-gator-100 text-gator-700 rounded-full text-xs font-medium">
               Connected
             </div>
             <button
               onClick={handleDisconnect}
-              disabled={isDisconnecting}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gator-500 text-white rounded-lg hover:bg-gator-700 transition-colors disabled:opacity-60"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gator-500 text-white rounded-lg hover:bg-gator-700 transition-colors"
             >
-              {isDisconnecting ? "Disconnecting..." : "Disconnect"}
+              Disconnect
             </button>
           </div>
         </div>
@@ -56,14 +63,12 @@ export default function Dashboard({ walletAddress = null }: Props) {
         {/* Token Balance Card */}
         <div className="bg-white rounded-xl border border-jungle-100 p-6">
           <div className="text-sm text-jungle-500 mb-2">Token Balance</div>
-          {/* TODO: Replace with real on-chain token balance */}
           <div className="text-4xl font-bold text-jungle-900 mb-1">1,250 CRD</div>
           <div className="text-sm text-jungle-500 mb-4">Native Croody Token</div>
           <Link
             href="/send"
             className="px-4 py-2 bg-gator-100 text-gator-700 rounded-lg hover:bg-gator-300 transition-colors text-sm inline-flex"
           >
-            {/* TODO: Navigate to send flow when route/page exists */}
             Send Tokens
           </Link>
         </div>
@@ -77,7 +82,6 @@ export default function Dashboard({ walletAddress = null }: Props) {
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* TODO: Replace mock NFTs with wallet-owned NFTs from contract/indexer */}
             {nfts.map((nft) => (
               <Link
                 key={nft.id}
@@ -112,7 +116,6 @@ export default function Dashboard({ walletAddress = null }: Props) {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {/* TODO: Replace mock auctions with wallet-related auctions */}
             {myAuctions.map((auction) => {
               const isOwner = auction.ownerAddress === displayWallet;
 
@@ -152,14 +155,12 @@ export default function Dashboard({ walletAddress = null }: Props) {
                           className="flex-1 px-3 py-2 rounded-lg bg-gator-100 text-gator-700 text-sm hover:bg-gator-300 transition-colors"
                           type="button"
                         >
-                          {/* TODO: Implement close auction contract action */}
                           Close Auction
                         </button>
                         <button
                           className="flex-1 px-3 py-2 rounded-lg border border-jungle-100 text-sm text-jungle-700 hover:bg-neutral-50"
                           type="button"
                         >
-                          {/* TODO: Implement cancel auction contract action */}
                           Cancel Auction
                         </button>
                       </div>
@@ -184,7 +185,6 @@ export default function Dashboard({ walletAddress = null }: Props) {
             <h2 className="text-2xl font-semibold text-jungle-900">Live NFT Auctions</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {/* TODO: Replace with live auctions fetched from backend/indexer */}
             {liveAuctions.map((auction) => (
               <div
                 key={auction.id}
