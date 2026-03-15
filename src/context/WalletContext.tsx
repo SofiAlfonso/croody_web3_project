@@ -26,16 +26,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (typeof window === "undefined" || !window.ethereum) return;
 
       try {
-        const accounts: string[] = await window.ethereum.request({
+        const accounts = (await window.ethereum.request({
           method: "eth_accounts",
-        });
+        })) as string[];
         if (accounts.length > 0) {
           setWalletAddress(accounts[0]);
         }
 
-        const chain: string = await window.ethereum.request({
+        const chain = (await window.ethereum.request({
           method: "eth_chainId",
-        });
+        })) as string;
         setChainId(chain);
       } catch {
         // Silently fail — user hasn't connected yet
@@ -49,7 +49,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined" || !window.ethereum) return;
 
-    const handleAccountsChanged = (accounts: string[]) => {
+    const handleAccountsChanged = (...args: unknown[]) => {
+      const accounts = args[0] as string[];
       if (accounts.length === 0) {
         setWalletAddress(null);
       } else {
@@ -57,7 +58,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    const handleChainChanged = (newChainId: string) => {
+    const handleChainChanged = (...args: unknown[]) => {
+      const newChainId = args[0] as string;
       setChainId(newChainId);
     };
 
@@ -78,16 +80,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     setIsConnecting(true);
     try {
-      const accounts: string[] = await window.ethereum.request({
+      const accounts = (await window.ethereum.request({
         method: "eth_requestAccounts",
-      });
+      })) as string[];
 
       if (accounts.length > 0) {
         setWalletAddress(accounts[0]);
 
-        const chain: string = await window.ethereum.request({
+        const chain = (await window.ethereum.request({
           method: "eth_chainId",
-        });
+        })) as string;
         setChainId(chain);
 
         return accounts[0];
