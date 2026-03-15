@@ -10,7 +10,7 @@ import { useMyNfts } from "@/hooks/useNfts";
 
 export default function Dashboard() {
   const router = useRouter();
-  const { walletAddress, isConnected, disconnectWallet } = useWalletContext();
+  const { walletAddress, isConnected, isDemo, disconnectWallet } = useWalletContext();
 
   // Protect route: redirect to home if not connected
   useEffect(() => {
@@ -43,10 +43,10 @@ export default function Dashboard() {
           <div className="text-xl font-semibold text-jungle-900">Croody</div>
           <div className="flex items-center gap-3">
             <div className="px-4 py-2 bg-jungle-100 rounded-lg text-sm text-jungle-500 font-mono">
-              {shortWallet}
+              {isDemo ? "Demo User" : shortWallet}
             </div>
-            <div className="px-3 py-1 bg-gator-100 text-gator-700 rounded-full text-xs font-medium">
-              Connected
+            <div className={`px-3 py-1 rounded-full text-xs font-medium ${isDemo ? "bg-yellow-100 text-yellow-700" : "bg-gator-100 text-gator-700"}`}>
+              {isDemo ? "Demo" : "Connected"}
             </div>
             <button
               onClick={handleDisconnect}
@@ -57,6 +57,13 @@ export default function Dashboard() {
           </div>
         </div>
       </header>
+
+      {/* Demo Banner */}
+      {isDemo && (
+        <div className="bg-yellow-50 border-b border-yellow-200 px-6 py-2 text-center text-sm text-yellow-700">
+          Demo Mode — You are viewing with mock data. Connect a real wallet for full functionality.
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">

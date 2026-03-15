@@ -2,11 +2,15 @@
 
 import { createContext, useContext, useCallback, useEffect, useState, type ReactNode } from "react";
 
+const DEMO_ADDRESS = "0xDEM0000000000000000000000000000000000000";
+
 interface WalletContextType {
   walletAddress: string | null;
   isConnected: boolean;
   isConnecting: boolean;
+  isDemo: boolean;
   connectWallet: () => Promise<string | null>;
+  connectDemo: () => void;
   disconnectWallet: () => void;
   chainId: string | null;
 }
@@ -102,10 +106,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const connectDemo = useCallback(() => {
+    setWalletAddress(DEMO_ADDRESS);
+    setChainId("0xaa36a7"); // Sepolia
+  }, []);
+
   const disconnectWallet = useCallback(() => {
     setWalletAddress(null);
     setChainId(null);
   }, []);
+
+  const isDemo = walletAddress === DEMO_ADDRESS;
 
   return (
     <WalletContext.Provider
@@ -113,7 +124,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         walletAddress,
         isConnected,
         isConnecting,
+        isDemo,
         connectWallet,
+        connectDemo,
         disconnectWallet,
         chainId,
       }}

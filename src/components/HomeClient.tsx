@@ -7,7 +7,7 @@ import { useWalletContext } from "@/context/WalletContext";
 
 export default function HomeClient() {
   const router = useRouter();
-  const { isConnected, isConnecting, connectWallet } = useWalletContext();
+  const { isConnected, isConnecting, connectWallet, connectDemo } = useWalletContext();
 
   // If already connected, redirect to dashboard
   useEffect(() => {
@@ -58,6 +58,16 @@ export default function HomeClient() {
           </button>
 
           <p className="text-sm text-jungle-500 mt-3">Wallet not connected</p>
+
+          <button
+            onClick={() => {
+              connectDemo();
+              router.push("/dashboard");
+            }}
+            className="mt-4 px-6 py-2 border border-jungle-200 text-jungle-500 rounded-lg text-sm hover:bg-jungle-100 transition-colors"
+          >
+            Enter Demo Mode
+          </button>
 
           {/* Info Row */}
           <div className="mt-16 flex items-center justify-center gap-12 text-jungle-500">
