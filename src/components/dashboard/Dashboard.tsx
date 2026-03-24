@@ -7,6 +7,7 @@ import { ArrowUpRight, Clock } from "lucide-react";
 import { useWalletContext } from "@/context/WalletContext";
 import { useLiveAuctions, useMyAuctions } from "@/hooks/useAuctions";
 import { useMyNfts } from "@/hooks/useNfts";
+import { useWalletBalance } from "@/hooks/useWalletBalance";
 import AppHeader from "@/components/shared/AppHeader";
 
 export default function Dashboard() {
@@ -28,6 +29,7 @@ export default function Dashboard() {
   const { data: nfts } = useMyNfts(displayWallet);
   const { data: myAuctions } = useMyAuctions(displayWallet);
   const { data: liveAuctions } = useLiveAuctions();
+  const { amount: walletBalance, symbol: walletBalanceSymbol, isLoading: isLoadingBalance, isError: hasBalanceError } = useWalletBalance();
 
   const handleDisconnect = () => {
     disconnectWallet();
@@ -73,8 +75,17 @@ export default function Dashboard() {
         {/* Token Balance Card */}
         <div className="bg-white rounded-xl border border-jungle-100 p-6">
           <div className="text-sm text-jungle-500 mb-2">Token Balance</div>
-          <div className="text-4xl font-bold text-jungle-900 mb-1">1,250 CRD</div>
-          <div className="text-sm text-jungle-500 mb-4">Native Croody Token</div>
+          <div className="text-4xl font-bold text-jungle-900 mb-1">
+            {isLoadingBalance ? "Loading..." : `${walletBalance} ${walletBalanceSymbol}`}
+          </div>
+          <div className="text-sm text-jungle-500 mb-4">
+            {isDemo ? "Native Croody Token (Demo)" : "On-chain wallet balance (Hardhat)"}
+          </div>
+          {hasBalanceError && (
+            <div className="text-sm text-red-600 mb-4">
+              Could not fetch on-chain balance. Verify your Hardhat network and wallet connection.
+            </div>
+          )}
           <Link
             href="/send"
             className="px-4 py-2 bg-gator-100 text-gator-700 rounded-lg hover:bg-gator-300 transition-colors text-sm inline-flex"
