@@ -7,6 +7,7 @@ import { ArrowUpRight, Clock } from "lucide-react";
 import { useWalletContext } from "@/context/WalletContext";
 import { useLiveAuctions, useMyAuctions } from "@/hooks/useAuctions";
 import { useMyNfts } from "@/hooks/useNfts";
+import AppHeader from "@/components/shared/AppHeader";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -38,25 +39,27 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Top Navigation */}
-      <header className="border-b border-jungle-100 bg-white sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="text-xl font-semibold text-jungle-900">Croody</div>
-          <div className="flex items-center gap-3">
-            <div className="px-4 py-2 bg-jungle-100 rounded-lg text-sm text-jungle-500 font-mono">
-              {isDemo ? "Demo User" : shortWallet}
-            </div>
-            <div className={`px-3 py-1 rounded-full text-xs font-medium ${isDemo ? "bg-yellow-100 text-yellow-700" : "bg-gator-100 text-gator-700"}`}>
-              {isDemo ? "Demo" : "Connected"}
-            </div>
-            <button
-              onClick={handleDisconnect}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gator-500 text-white rounded-lg hover:bg-gator-700 transition-colors"
-            >
-              Disconnect
-            </button>
-          </div>
+      <AppHeader
+        title="Croody"
+        sticky
+        maxWidthClassName="max-w-7xl"
+        borderClassName="border-jungle-100"
+        titleClassName="text-jungle-900"
+        rightClassName="flex items-center gap-3"
+      >
+        <div className="px-4 py-2 bg-jungle-100 rounded-lg text-sm text-jungle-500 font-mono">
+          {isDemo ? "Demo User" : shortWallet}
         </div>
-      </header>
+        <div className={`px-3 py-1 rounded-full text-xs font-medium ${isDemo ? "bg-yellow-100 text-yellow-700" : "bg-gator-100 text-gator-700"}`}>
+          {isDemo ? "Demo" : "Connected"}
+        </div>
+        <button
+          onClick={handleDisconnect}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gator-500 text-white rounded-lg hover:bg-gator-700 transition-colors"
+        >
+          Disconnect
+        </button>
+      </AppHeader>
 
       {/* Demo Banner */}
       {isDemo && (

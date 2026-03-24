@@ -1,4 +1,4 @@
-import NftDetail from "@/components/NftDetail";
+import NftDetail from "@/components/nft/NftDetail";
 
 export default async function NftDetailPage({
   params,

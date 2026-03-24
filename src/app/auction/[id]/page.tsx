@@ -1,4 +1,4 @@
-import AuctionDetail from "@/components/AuctionDetail";
+import AuctionDetail from "@/components/auction/AuctionDetail";
 
 export default async function AuctionDetailPage({
    params 

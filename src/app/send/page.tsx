@@ -1,4 +1,4 @@
-import SendTokens from "@/components/SendTokens";
+import SendTokens from "@/components/send/SendTokens";
 
 export default function SendPage() {
   return <SendTokens />;

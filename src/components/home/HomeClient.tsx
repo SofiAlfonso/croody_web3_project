@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Layers, Lock, Shield } from "lucide-react";
 import { useWalletContext } from "@/context/WalletContext";
+import AppHeader from "@/components/shared/AppHeader";
 
 export default function HomeClient() {
   const router = useRouter();
@@ -26,18 +27,20 @@ export default function HomeClient() {
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col">
       {/* Header */}
-      <header className="border-b border-jungle-100 bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="text-xl font-semibold text-jungle-900">Croody</div>
-          <button
-            onClick={onConnectClick}
-            disabled={isConnecting}
-            className="px-4 py-2 bg-gator-500 text-white rounded-lg hover:bg-gator-700 transition-colors disabled:opacity-60"
-          >
-            {isConnecting ? "Connecting..." : "Connect Wallet"}
-          </button>
-        </div>
-      </header>
+      <AppHeader
+        title="Croody"
+        maxWidthClassName="max-w-7xl"
+        borderClassName="border-jungle-100"
+        titleClassName="text-jungle-900"
+      >
+        <button
+          onClick={onConnectClick}
+          disabled={isConnecting}
+          className="px-4 py-2 bg-gator-500 text-white rounded-lg hover:bg-gator-700 transition-colors disabled:opacity-60"
+        >
+          {isConnecting ? "Connecting..." : "Connect Wallet"}
+        </button>
+      </AppHeader>
 
       {/* Hero Section */}
       <main className="flex-1 flex items-center justify-center px-6">

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSendTokens } from "@/hooks/useSendTokens";
 import { useWalletContext } from "@/context/WalletContext";
+import AppHeader from "@/components/shared/AppHeader";
+import BackToDashboardLink from "@/components/shared/BackToDashboardLink";
 
 export default function SendTokens() {
   const router = useRouter();
@@ -27,14 +28,9 @@ export default function SendTokens() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <header className="border-b border-neutral-200 bg-white sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="text-xl font-semibold text-neutral-900">Send Tokens</div>
-          <Link className="px-3 py-2 text-sm text-neutral-600 hover:text-neutral-900" href="/dashboard">
-            Back to Dashboard
-          </Link>
-        </div>
-      </header>
+      <AppHeader title="Send Tokens" sticky maxWidthClassName="max-w-5xl">
+        <BackToDashboardLink />
+      </AppHeader>
 
       <main className="max-w-5xl mx-auto px-6 py-10">
         <div className="bg-white border border-neutral-200 rounded-2xl p-8 space-y-6">
