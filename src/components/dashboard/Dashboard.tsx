@@ -98,15 +98,18 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-semibold text-jungle-900">My NFTs</h2>
-            <button className="px-4 py-2 text-jungle-500 hover:text-jungle-900 transition-colors text-sm">
+            <Link
+              href="/nfts"
+              className="px-4 py-2 text-jungle-500 hover:text-jungle-900 transition-colors text-sm"
+            >
               View All NFTs →
-            </button>
+            </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {nfts.map((nft) => (
               <Link
                 key={nft.id}
-                href={`/nft/${nft.id}`}
+                href={`/nfts/${nft.id}`}
                 className="bg-white rounded-xl border border-jungle-100 overflow-hidden hover:border-gator-300 transition-colors text-left"
               >
                 <div className="aspect-square bg-jungle-100">

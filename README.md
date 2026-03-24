@@ -58,6 +58,41 @@ Mini-plataforma Web3 tipo eBay donde los usuarios tienen una billetera con token
 
 ---
 
+## Como correr el proyecto en equipo (despues de hacer pull)
+
+Como ahora ignoramos archivos generados de Hardhat, cada integrante debe regenerarlos localmente.
+
+1. Instalar dependencias en raiz y contratos:
+
+```bash
+npm install
+npm --prefix contracts install
+```
+
+2. Levantar nodo local de Hardhat (terminal 1):
+
+```bash
+npm --prefix contracts run node
+```
+
+3. Desplegar contratos en localhost (terminal 2):
+
+```bash
+npm --prefix contracts run deploy:local
+```
+
+4. Levantar frontend (terminal 3):
+
+```bash
+npm run dev
+```
+
+Notas:
+- El deploy local genera automaticamente `src/lib/deployed-addresses.json` con la direccion del contrato para el frontend.
+- Si reinicias el nodo local, vuelve a ejecutar `deploy:local` para regenerar direcciones validas.
+
+---
+
 ## Estructura del Proyecto
 
 ```

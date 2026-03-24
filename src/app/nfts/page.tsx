@@ -1,4 +1,4 @@
-import NftGallery from "@/components/nft/NftGallery";
+import NftGallery from "@/components/nfts/NftGallery";
 
 export const metadata = {
   title: "My NFTs — Croody",

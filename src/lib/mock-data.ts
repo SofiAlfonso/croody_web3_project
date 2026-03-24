@@ -8,11 +8,16 @@ export type NFT = {
   id: string;
   name: string;
   image: string;
+  ownerAddress?: string;
   collection?: string;
   description?: string;
   floorPrice?: number; // in CRD
   traits?: Trait[];
 };
+
+const DEMO_ADDRESS = "0xDEM0000000000000000000000000000000000000";
+const SAMPLE_OWNER_A = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+const SAMPLE_OWNER_B = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
 
 export type Auction = {
   id: string;
@@ -28,6 +33,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "001", name: "Croody Ape #001",
     image: "https://picsum.photos/seed/croody1/600/600",
+    ownerAddress: DEMO_ADDRESS,
     collection: "Croody Genesis",
     description: "One of the original Croody Genesis apes. Grants VIP access to all Croody auctions and future drops.",
     floorPrice: 420,
@@ -42,6 +48,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "002", name: "Croody Ape #002",
     image: "https://picsum.photos/seed/croody2/600/600",
+    ownerAddress: DEMO_ADDRESS,
     collection: "Croody Genesis",
     description: "A rare Croody Genesis ape with distinctive features from the founding batch.",
     floorPrice: 380,
@@ -56,6 +63,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "003", name: "Croody Ape #003",
     image: "https://picsum.photos/seed/croody3/600/600",
+    ownerAddress: DEMO_ADDRESS,
     collection: "Croody Genesis",
     description: "A member of the original Croody Genesis collection — each one unique, each one legendary.",
     floorPrice: 395,
@@ -70,6 +78,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "004", name: "Croody Ape #004",
     image: "https://picsum.photos/seed/croody4/600/600",
+    ownerAddress: SAMPLE_OWNER_A,
     collection: "Croody Genesis",
     description: "Genesis ape carrying the spirit of the Croody blockchain. A true piece of Web3 history.",
     floorPrice: 410,
@@ -84,6 +93,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "005", name: "Croody Ape #005",
     image: "https://picsum.photos/seed/croody5/600/600",
+    ownerAddress: SAMPLE_OWNER_A,
     collection: "Croody Genesis",
     description: "The fifth Genesis ape — a symbol of resilience in the Croody ecosystem.",
     floorPrice: 370,
@@ -98,6 +108,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "006", name: "Croody Ape #006",
     image: "https://picsum.photos/seed/croody6/600/600",
+    ownerAddress: SAMPLE_OWNER_B,
     collection: "Croody Genesis",
     description: "Born from the sixth mint of the Genesis collection. Rare and coveted.",
     floorPrice: 360,
@@ -112,6 +123,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "007", name: "Neon Relic #001",
     image: "https://picsum.photos/seed/croody7/600/600",
+    ownerAddress: SAMPLE_OWNER_B,
     collection: "Neon Relics",
     description: "A glowing artifact from the Neon Relics series. Forged in the digital underground.",
     floorPrice: 280,
@@ -125,6 +137,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "008", name: "Neon Relic #002",
     image: "https://picsum.photos/seed/croody8/600/600",
+    ownerAddress: SAMPLE_OWNER_B,
     collection: "Neon Relics",
     description: "The second Neon Relic — pulsing with raw blockchain energy.",
     floorPrice: 265,
@@ -138,6 +151,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "009", name: "Pixel Degen #001",
     image: "https://picsum.photos/seed/croody9/600/600",
+    ownerAddress: DEMO_ADDRESS,
     collection: "Pixel Degens",
     description: "A pixelated degen straight from the art blocks. Built for those who HODL through it all.",
     floorPrice: 150,

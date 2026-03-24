@@ -15,7 +15,7 @@ interface NftDetailProps {
 }
 
 export default function NftDetail({ id }: NftDetailProps) {
-  const { data: nft } = useNftById(id);
+  const { data: nft, isLoading } = useNftById(id);
   const { createAuction, isPending: isCreatingAuction } = useCreateAuction();
   const { transferNft, isPending: isTransferringNft } = useTransferNft();
   const [isAuctionDialogOpen, setIsAuctionDialogOpen] = useState(false);
@@ -31,6 +31,27 @@ export default function NftDetail({ id }: NftDetailProps) {
     if (pct <= 12) return "bg-gator-100 text-gator-700";
     return "bg-jungle-50 text-jungle-500";
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-neutral-50">
+        <AppHeader title="NFT Details" sticky>
+          <Link
+            href="/nfts"
+            className="flex items-center gap-1.5 text-sm text-jungle-500 hover:text-jungle-900 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Gallery
+          </Link>
+        </AppHeader>
+        <main className="max-w-7xl mx-auto px-6 py-10">
+          <div className="bg-white border border-jungle-100 rounded-2xl p-8 text-center text-jungle-500">
+            Loading NFT details...
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!nft) {
     return (
