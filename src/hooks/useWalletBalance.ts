@@ -49,7 +49,7 @@ export function useWalletBalance(): WalletBalanceResult {
   }, [walletAddress]);
 
   const { data, isLoading, isError } = useReadContract({
-    address: deployedAddresses.contracts.projectToken as `0x${string}`,
+    address: (deployedAddresses as Record<string, Record<string, string>>).contracts?.projectToken as `0x${string}` | undefined,
     abi: ERC20_ABI,
     functionName: "balanceOf",
     args: address ? [address] : undefined,

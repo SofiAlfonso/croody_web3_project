@@ -67,13 +67,13 @@ async function readOwnedNftsFromChain(
     args: [owner],
   })) as bigint;
 
-  if (balance === 0n) {
+  if (balance === BigInt(0)) {
     return [];
   }
 
   const owned: NFT[] = [];
 
-  for (let i = 0n; i < balance; i += 1n) {
+  for (let i = BigInt(0); i < balance; i += BigInt(1)) {
     const tokenId = (await publicClient.readContract({
       address: nftAddress,
       abi: nftCollectionAbi,

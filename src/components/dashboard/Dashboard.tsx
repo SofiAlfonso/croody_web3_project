@@ -9,10 +9,11 @@ import { useLiveAuctions, useMyAuctions } from "@/hooks/useAuctions";
 import { useMyNfts } from "@/hooks/useNfts";
 import { useWalletBalance } from "@/hooks/useWalletBalance";
 import AppHeader from "@/components/shared/AppHeader";
+import WalletBadge from "@/components/shared/WalletBadge";
 
 export default function Dashboard() {
   const router = useRouter();
-  const { walletAddress, isConnected, isDemo, disconnectWallet } = useWalletContext();
+  const { walletAddress, isConnected, isDemo } = useWalletContext();
 
   // Protect route: redirect to home if not connected
   useEffect(() => {
@@ -22,19 +23,11 @@ export default function Dashboard() {
   }, [isConnected, router]);
 
   const displayWallet = walletAddress ?? "";
-  const shortWallet = displayWallet
-    ? `${displayWallet.slice(0, 6)}...${displayWallet.slice(-4)}`
-    : "";
 
   const { data: nfts } = useMyNfts(displayWallet);
   const { data: myAuctions } = useMyAuctions(displayWallet);
   const { data: liveAuctions } = useLiveAuctions();
   const { amount: walletBalance, symbol: walletBalanceSymbol, isLoading: isLoadingBalance, isError: hasBalanceError } = useWalletBalance();
-
-  const handleDisconnect = () => {
-    disconnectWallet();
-    router.push("/");
-  };
 
   if (!isConnected) return null;
 
@@ -49,18 +42,7 @@ export default function Dashboard() {
         titleClassName="text-jungle-900"
         rightClassName="flex items-center gap-3"
       >
-        <div className="px-4 py-2 bg-jungle-100 rounded-lg text-sm text-jungle-500 font-mono">
-          {isDemo ? "Demo User" : shortWallet}
-        </div>
-        <div className={`px-3 py-1 rounded-full text-xs font-medium ${isDemo ? "bg-yellow-100 text-yellow-700" : "bg-gator-100 text-gator-700"}`}>
-          {isDemo ? "Demo" : "Connected"}
-        </div>
-        <button
-          onClick={handleDisconnect}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gator-500 text-white rounded-lg hover:bg-gator-700 transition-colors"
-        >
-          Disconnect
-        </button>
+        <WalletBadge />
       </AppHeader>
 
       {/* Demo Banner */}

@@ -7,6 +7,7 @@ import { Search, ImageOff } from "lucide-react";
 import { useWalletContext } from "@/context/WalletContext";
 import { useMyNfts } from "@/hooks/useNfts";
 import AppHeader from "@/components/shared/AppHeader";
+import WalletBadge from "@/components/shared/WalletBadge";
 import BackToDashboardLink from "@/components/shared/BackToDashboardLink";
 
 const COLLECTIONS = ["All", "Croody Genesis", "Neon Relics", "Pixel Degens"] as const;
@@ -50,12 +51,8 @@ export default function NftGallery() {
         titleClassName="text-jungle-900"
         rightClassName="flex items-center gap-3"
       >
-        {isDemo && (
-          <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-            Demo
-          </span>
-        )}
         <BackToDashboardLink />
+        <WalletBadge />
       </AppHeader>
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-6">

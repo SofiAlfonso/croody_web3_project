@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSendTokens } from "@/hooks/useSendTokens";
 import { useWalletContext } from "@/context/WalletContext";
 import AppHeader from "@/components/shared/AppHeader";
+import WalletBadge from "@/components/shared/WalletBadge";
 import BackToDashboardLink from "@/components/shared/BackToDashboardLink";
 
 export default function SendTokens() {
@@ -28,8 +29,9 @@ export default function SendTokens() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <AppHeader title="Send Tokens" sticky maxWidthClassName="max-w-5xl">
+      <AppHeader title="Send Tokens" sticky maxWidthClassName="max-w-5xl" rightClassName="flex items-center gap-3">
         <BackToDashboardLink />
+        <WalletBadge />
       </AppHeader>
 
       <main className="max-w-5xl mx-auto px-6 py-10">

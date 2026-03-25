@@ -5,6 +5,7 @@ import { Clock } from "lucide-react";
 import { useAuctionById } from "@/hooks/useAuctions";
 import { usePlaceBid } from "@/hooks/usePlaceBid";
 import AppHeader from "@/components/shared/AppHeader";
+import WalletBadge from "@/components/shared/WalletBadge";
 import BackToDashboardLink from "@/components/shared/BackToDashboardLink";
 import NotFoundState from "@/components/shared/NotFoundState";
 import ActionModal from "@/components/shared/ActionModal";
@@ -34,8 +35,13 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <AppHeader title="Auction" sticky>
+      <AppHeader
+        title="Auction"
+        sticky
+        rightClassName="flex items-center gap-3"
+      >
         <BackToDashboardLink />
+        <WalletBadge />
       </AppHeader>
 
       <main className="max-w-6xl mx-auto px-6 py-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">

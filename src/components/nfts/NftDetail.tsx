@@ -7,6 +7,7 @@ import { useNftById } from "@/hooks/useNfts";
 import { useCreateAuction } from "@/hooks/useCreateAuction";
 import { useTransferNft } from "@/hooks/useTransferNft";
 import AppHeader from "@/components/shared/AppHeader";
+import WalletBadge from "@/components/shared/WalletBadge";
 import NotFoundState from "@/components/shared/NotFoundState";
 import ActionModal from "@/components/shared/ActionModal";
 
@@ -90,6 +91,7 @@ export default function NftDetail({ id }: NftDetailProps) {
           <ArrowLeft className="w-4 h-4" />
           Back to Gallery
         </Link>
+        <WalletBadge />
       </AppHeader>
 
       <main className="max-w-7xl mx-auto px-6 py-10 grid gap-8 lg:grid-cols-[1fr_1fr]">
