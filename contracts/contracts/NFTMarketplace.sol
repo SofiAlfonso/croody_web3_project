@@ -27,6 +27,7 @@ pragma solidity ^0.8.24;
  * - Validar tiempo de subasta
  * - Devolver tokens a pujas perdedoras
  */
+// solhint-disable-next-line no-empty-blocks
 contract NFTMarketplace {
     // TODO: Implementar
 

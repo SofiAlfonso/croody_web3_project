@@ -11,9 +11,7 @@ import { nftCollectionAbi } from "@/lib/abis/nftCollection";
 const DEMO_ADDRESS = "0xDEM0000000000000000000000000000000000000";
 
 function findMockByTokenId(id: string): NFT | undefined {
-  return mockNFTs.find(
-    (nft) => nft.id === id || nft.id === id.padStart(3, "0"),
-  );
+  return mockNFTs.find((nft) => nft.id === id || nft.id === id.padStart(3, "0"));
 }
 
 function toGatewayURL(uri: string): string {
@@ -96,7 +94,8 @@ async function readOwnedNftsFromChain(
       id: tokenIdString,
       ownerAddress: owner,
       name: metadata?.name || fromMock?.name || `Croody NFT #${tokenIdString}`,
-      image: metadata?.image || fromMock?.image || "https://picsum.photos/seed/croody-default/600/600",
+      image:
+        metadata?.image || fromMock?.image || "https://picsum.photos/seed/croody-default/600/600",
       collection: fromMock?.collection || "Croody Collection",
       description: metadata?.description || fromMock?.description,
       traits: metadata?.traits || fromMock?.traits,
@@ -192,7 +191,10 @@ export function useNftById(id?: string) {
           id: tokenId.toString(),
           ownerAddress,
           name: metadata?.name || fromMock?.name || `Croody NFT #${tokenId.toString()}`,
-          image: metadata?.image || fromMock?.image || "https://picsum.photos/seed/croody-default/600/600",
+          image:
+            metadata?.image ||
+            fromMock?.image ||
+            "https://picsum.photos/seed/croody-default/600/600",
           collection: fromMock?.collection || "Croody Collection",
           description: metadata?.description || fromMock?.description,
           traits: metadata?.traits || fromMock?.traits,

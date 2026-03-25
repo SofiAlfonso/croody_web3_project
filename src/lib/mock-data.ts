@@ -31,11 +31,13 @@ export type Auction = {
 
 export const mockNFTs: NFT[] = [
   {
-    id: "001", name: "Croody Ape #001",
+    id: "001",
+    name: "Croody Ape #001",
     image: "https://picsum.photos/seed/croody1/600/600",
     ownerAddress: DEMO_ADDRESS,
     collection: "Croody Genesis",
-    description: "One of the original Croody Genesis apes. Grants VIP access to all Croody auctions and future drops.",
+    description:
+      "One of the original Croody Genesis apes. Grants VIP access to all Croody auctions and future drops.",
     floorPrice: 420,
     traits: [
       { type: "Background", value: "Jungle Green", rarity: "8% have this" },
@@ -46,7 +48,8 @@ export const mockNFTs: NFT[] = [
     ],
   },
   {
-    id: "002", name: "Croody Ape #002",
+    id: "002",
+    name: "Croody Ape #002",
     image: "https://picsum.photos/seed/croody2/600/600",
     ownerAddress: DEMO_ADDRESS,
     collection: "Croody Genesis",
@@ -61,11 +64,13 @@ export const mockNFTs: NFT[] = [
     ],
   },
   {
-    id: "003", name: "Croody Ape #003",
+    id: "003",
+    name: "Croody Ape #003",
     image: "https://picsum.photos/seed/croody3/600/600",
     ownerAddress: DEMO_ADDRESS,
     collection: "Croody Genesis",
-    description: "A member of the original Croody Genesis collection — each one unique, each one legendary.",
+    description:
+      "A member of the original Croody Genesis collection — each one unique, each one legendary.",
     floorPrice: 395,
     traits: [
       { type: "Background", value: "Deep Ocean", rarity: "9% have this" },
@@ -76,11 +81,13 @@ export const mockNFTs: NFT[] = [
     ],
   },
   {
-    id: "004", name: "Croody Ape #004",
+    id: "004",
+    name: "Croody Ape #004",
     image: "https://picsum.photos/seed/croody4/600/600",
     ownerAddress: SAMPLE_OWNER_A,
     collection: "Croody Genesis",
-    description: "Genesis ape carrying the spirit of the Croody blockchain. A true piece of Web3 history.",
+    description:
+      "Genesis ape carrying the spirit of the Croody blockchain. A true piece of Web3 history.",
     floorPrice: 410,
     traits: [
       { type: "Background", value: "Purple Haze", rarity: "7% have this" },
@@ -91,7 +98,8 @@ export const mockNFTs: NFT[] = [
     ],
   },
   {
-    id: "005", name: "Croody Ape #005",
+    id: "005",
+    name: "Croody Ape #005",
     image: "https://picsum.photos/seed/croody5/600/600",
     ownerAddress: SAMPLE_OWNER_A,
     collection: "Croody Genesis",
@@ -106,7 +114,8 @@ export const mockNFTs: NFT[] = [
     ],
   },
   {
-    id: "006", name: "Croody Ape #006",
+    id: "006",
+    name: "Croody Ape #006",
     image: "https://picsum.photos/seed/croody6/600/600",
     ownerAddress: SAMPLE_OWNER_B,
     collection: "Croody Genesis",
@@ -121,11 +130,13 @@ export const mockNFTs: NFT[] = [
     ],
   },
   {
-    id: "007", name: "Neon Relic #001",
+    id: "007",
+    name: "Neon Relic #001",
     image: "https://picsum.photos/seed/croody7/600/600",
     ownerAddress: SAMPLE_OWNER_B,
     collection: "Neon Relics",
-    description: "A glowing artifact from the Neon Relics series. Forged in the digital underground.",
+    description:
+      "A glowing artifact from the Neon Relics series. Forged in the digital underground.",
     floorPrice: 280,
     traits: [
       { type: "Glow Color", value: "Cyan", rarity: "20% have this" },
@@ -135,7 +146,8 @@ export const mockNFTs: NFT[] = [
     ],
   },
   {
-    id: "008", name: "Neon Relic #002",
+    id: "008",
+    name: "Neon Relic #002",
     image: "https://picsum.photos/seed/croody8/600/600",
     ownerAddress: SAMPLE_OWNER_B,
     collection: "Neon Relics",
@@ -149,11 +161,13 @@ export const mockNFTs: NFT[] = [
     ],
   },
   {
-    id: "009", name: "Pixel Degen #001",
+    id: "009",
+    name: "Pixel Degen #001",
     image: "https://picsum.photos/seed/croody9/600/600",
     ownerAddress: DEMO_ADDRESS,
     collection: "Pixel Degens",
-    description: "A pixelated degen straight from the art blocks. Built for those who HODL through it all.",
+    description:
+      "A pixelated degen straight from the art blocks. Built for those who HODL through it all.",
     floorPrice: 150,
     traits: [
       { type: "Pixel Density", value: "8-bit", rarity: "30% have this" },
