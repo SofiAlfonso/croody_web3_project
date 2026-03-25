@@ -20,10 +20,8 @@ export default function AppHeader({
   rightClassName,
 }: AppHeaderProps) {
   return (
-    <header
-      className={`border-b ${borderClassName} bg-white ${sticky ? "sticky top-0 z-10" : ""}`}
-    >
-      <div className={`${maxWidthClassName} mx-auto px-6 py-4 flex items-center justify-between`}>
+    <header className={`border-b ${borderClassName} bg-white ${sticky ? "sticky top-0 z-10" : ""}`}>
+      <div className={`${maxWidthClassName} mx-auto flex items-center justify-between px-6 py-4`}>
         <div className={`text-xl font-semibold ${titleClassName}`}>{title}</div>
         {children && <div className={rightClassName}>{children}</div>}
       </div>
