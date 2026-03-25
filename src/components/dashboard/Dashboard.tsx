@@ -79,7 +79,7 @@ export default function Dashboard() {
             {isLoadingBalance ? "Loading..." : `${walletBalance} ${walletBalanceSymbol}`}
           </div>
           <div className="text-sm text-jungle-500 mb-4">
-            {isDemo ? "Native Croody Token (Demo)" : "On-chain wallet balance (Hardhat)"}
+            Croody Token (CRD)
           </div>
           {hasBalanceError && (
             <div className="text-sm text-red-600 mb-4">

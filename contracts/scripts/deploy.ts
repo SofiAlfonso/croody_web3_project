@@ -13,6 +13,12 @@ async function main() {
 
   const nftCollectionAddress = await nftCollection.getAddress();
 
+  const projectTokenFactory = await ethers.getContractFactory("ProjectToken");
+  const projectToken = await projectTokenFactory.deploy();
+  await projectToken.waitForDeployment();
+
+  const projectTokenAddress = await projectToken.getAddress();
+
   const seedURIs = [
     "ipfs://bafkreifakecroody001/metadata.json",
     "ipfs://bafkreifakecroody002/metadata.json",
@@ -41,6 +47,7 @@ async function main() {
     ownerB: ownerB.address,
     contracts: {
       nftCollection: nftCollectionAddress,
+      projectToken: projectTokenAddress,
     },
   };
 
@@ -60,6 +67,7 @@ async function main() {
   fs.writeFileSync(frontendArtifact, JSON.stringify(deploymentData, null, 2));
 
   console.log("NFTCollection deployed at:", nftCollectionAddress);
+  console.log("ProjectToken deployed at:", projectTokenAddress);
   console.log("Deployment artifacts written to:");
   console.log("-", networkFile);
   console.log("-", frontendArtifact);
