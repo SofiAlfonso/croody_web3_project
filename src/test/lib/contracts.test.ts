@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { getNftCollectionAddress } from "@/lib/contracts";
+import { getNftCollectionAddress, getProjectTokenAddress } from "@/lib/contracts";
 
 describe("contracts.ts", () => {
   beforeEach(() => {
@@ -44,9 +44,43 @@ describe("contracts.ts", () => {
   it("falls back to deployed-addresses.json when env var is absent", () => {
     delete process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS;
     const address = getNftCollectionAddress();
-    // Should return the address from deployed-addresses.json if it's valid
     if (address !== null) {
       expect(address).to.match(/^0x[a-fA-F0-9]{40}$/);
     }
+  });
+});
+
+describe("getProjectTokenAddress", () => {
+  beforeEach(() => {
+    delete process.env.NEXT_PUBLIC_PROJECT_TOKEN_ADDRESS;
+  });
+
+  it("returns address from deployed-addresses.json when env var is missing", () => {
+    const address = getProjectTokenAddress();
+    if (address !== null) {
+      expect(address).to.match(/^0x[a-fA-F0-9]{40}$/);
+    }
+  });
+
+  it("returns null when candidate does not start with 0x", () => {
+    process.env.NEXT_PUBLIC_PROJECT_TOKEN_ADDRESS = "abcdef1234567890abcdef1234567890abcdef12";
+    expect(getProjectTokenAddress()).to.be.null;
+  });
+
+  it("returns null when candidate has wrong length", () => {
+    process.env.NEXT_PUBLIC_PROJECT_TOKEN_ADDRESS = "0xABCD";
+    expect(getProjectTokenAddress()).to.be.null;
+  });
+
+  it("returns the address when env var is a valid 42-char 0x address", () => {
+    const validAddress = "0x" + "c".repeat(40);
+    process.env.NEXT_PUBLIC_PROJECT_TOKEN_ADDRESS = validAddress;
+    expect(getProjectTokenAddress()).to.equal(validAddress);
+  });
+
+  it("prefers env var over deployed-addresses.json", () => {
+    const envAddress = "0x" + "d".repeat(40);
+    process.env.NEXT_PUBLIC_PROJECT_TOKEN_ADDRESS = envAddress;
+    expect(getProjectTokenAddress()).to.equal(envAddress);
   });
 });
