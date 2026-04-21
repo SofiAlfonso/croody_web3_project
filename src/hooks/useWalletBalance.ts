@@ -1,9 +1,27 @@
 "use client";
 
 import { useMemo } from "react";
-import { useBalance } from "wagmi";
+import { useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 import { useWalletContext } from "@/context/WalletContext";
+import deployedAddresses from "@/lib/deployed-addresses.json";
+
+const ERC20_ABI = [
+  {
+    name: "balanceOf",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    name: "decimals",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint8" }],
+  },
+] as const;
 
 type WalletBalanceResult = {
   amount: string;
@@ -30,8 +48,11 @@ export function useWalletBalance(): WalletBalanceResult {
     return walletAddress as `0x${string}`;
   }, [walletAddress]);
 
-  const { data, isLoading, isError } = useBalance({
-    address,
+  const { data, isLoading, isError } = useReadContract({
+    address: deployedAddresses.contracts.projectToken as `0x${string}`,
+    abi: ERC20_ABI,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
     query: {
       enabled: Boolean(address) && isConnected && !isDemo,
       refetchInterval: 10_000,
@@ -50,15 +71,15 @@ export function useWalletBalance(): WalletBalanceResult {
   if (!isConnected || !address) {
     return {
       amount: "0",
-      symbol: "ETH",
+      symbol: "CRD",
       isLoading: false,
       isError: false,
     };
   }
 
   return {
-    amount: data ? formatBalance(formatUnits(data.value, data.decimals)) : "0",
-    symbol: data?.symbol ?? "ETH",
+    amount: data ? formatBalance(formatUnits(data as bigint, 18)) : "0",
+    symbol: "CRD",
     isLoading,
     isError,
   };

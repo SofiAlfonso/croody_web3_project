@@ -13,6 +13,17 @@ async function main() {
 
   const nftCollectionAddress = await nftCollection.getAddress();
 
+  const projectTokenFactory = await ethers.getContractFactory("ProjectToken");
+  const projectToken = await projectTokenFactory.deploy();
+  await projectToken.waitForDeployment();
+
+  const projectTokenAddress = await projectToken.getAddress();
+
+  const marketplaceFactory = await ethers.getContractFactory("NFTMarketplace");
+  const marketplace = await marketplaceFactory.deploy(projectTokenAddress);
+  await marketplace.waitForDeployment();
+  const marketplaceAddress = await marketplace.getAddress();
+
   const seedURIs = [
     "ipfs://bafkreifakecroody001/metadata.json",
     "ipfs://bafkreifakecroody002/metadata.json",
@@ -32,6 +43,13 @@ async function main() {
     await tx.wait();
   }
 
+  // Distribute initial CRD tokens for testing
+  const initialCRD = ethers.parseEther("10000"); // 10,000 CRD each
+  console.log("Distributing 10,000 CRD to test accounts...");
+  await (await projectToken.distribute(deployer.address, initialCRD)).wait();
+  await (await projectToken.distribute(ownerA.address, initialCRD)).wait();
+  await (await projectToken.distribute(ownerB.address, initialCRD)).wait();
+
   const deploymentData = {
     network: (await ethers.provider.getNetwork()).name,
     chainId: Number((await ethers.provider.getNetwork()).chainId),
@@ -41,6 +59,8 @@ async function main() {
     ownerB: ownerB.address,
     contracts: {
       nftCollection: nftCollectionAddress,
+      projectToken: projectTokenAddress,
+      nftMarketplace: marketplaceAddress,
     },
   };
 
@@ -60,6 +80,8 @@ async function main() {
   fs.writeFileSync(frontendArtifact, JSON.stringify(deploymentData, null, 2));
 
   console.log("NFTCollection deployed at:", nftCollectionAddress);
+  console.log("ProjectToken deployed at:", projectTokenAddress);
+  console.log("NFTMarketplace deployed at:", marketplaceAddress);
   console.log("Deployment artifacts written to:");
   console.log("-", networkFile);
   console.log("-", frontendArtifact);

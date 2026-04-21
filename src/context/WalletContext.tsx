@@ -112,6 +112,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const disconnectWallet = useCallback(() => {
+    // Try to revoke MetaMask permissions so it doesn't auto-reconnect
+    if (typeof window !== "undefined" && window.ethereum) {
+      window.ethereum
+        .request({
+          method: "wallet_revokePermissions",
+          params: [{ eth_accounts: {} }],
+        })
+        .catch(() => {
+          // Not all wallets support this — silently ignore
+        });
+    }
     setWalletAddress(null);
     setChainId(null);
   }, []);

@@ -25,7 +25,7 @@ export default function HomeClient() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex flex-col">
+    <div className="flex min-h-screen flex-col bg-neutral-50">
       {/* Header */}
       <AppHeader
         title="Croody"
@@ -36,62 +36,63 @@ export default function HomeClient() {
         <button
           onClick={onConnectClick}
           disabled={isConnecting}
-          className="px-4 py-2 bg-gator-500 text-white rounded-lg hover:bg-gator-700 transition-colors disabled:opacity-60"
+          className="bg-gator-500 hover:bg-gator-700 rounded-lg px-4 py-2 text-white transition-colors disabled:opacity-60"
         >
           {isConnecting ? "Connecting..." : "Connect Wallet"}
         </button>
       </AppHeader>
 
       {/* Hero Section */}
-      <main className="flex-1 flex items-center justify-center px-6">
+      <main className="flex flex-1 items-center justify-center px-6">
         <div className="max-w-3xl text-center">
-          <h1 className="text-5xl font-bold text-jungle-900 mb-6">
+          <h1 className="text-jungle-900 mb-6 text-5xl font-bold">
             Your Web3 Wallet & NFT Auction Ecosystem
           </h1>
-          <p className="text-xl text-jungle-500 mb-6">
-            Manage tokens, own NFTs, and participate in decentralized auctions — securely and transparently.
+          <p className="text-jungle-500 mb-6 text-xl">
+            Manage tokens, own NFTs, and participate in decentralized auctions — securely and
+            transparently.
           </p>
 
           <button
             onClick={onConnectClick}
             disabled={isConnecting}
-            className="px-8 py-4 bg-gator-500 text-white rounded-lg text-lg hover:bg-gator-700 transition-colors disabled:opacity-60"
+            className="bg-gator-500 hover:bg-gator-700 rounded-lg px-8 py-4 text-lg text-white transition-colors disabled:opacity-60"
           >
             {isConnecting ? "Connecting..." : "Connect Wallet"}
           </button>
 
-          <p className="text-sm text-jungle-500 mt-3">Wallet not connected</p>
+          <p className="text-jungle-500 mt-3 text-sm">Wallet not connected</p>
 
           <button
             onClick={() => {
               connectDemo();
               router.push("/dashboard");
             }}
-            className="mt-4 px-6 py-2 border border-jungle-200 text-jungle-500 rounded-lg text-sm hover:bg-jungle-100 transition-colors"
+            className="border-jungle-200 text-jungle-500 hover:bg-jungle-100 mt-4 rounded-lg border px-6 py-2 text-sm transition-colors"
           >
             Enter Demo Mode
           </button>
 
           {/* Info Row */}
-          <div className="mt-16 flex items-center justify-center gap-12 text-jungle-500">
+          <div className="text-jungle-500 mt-16 flex items-center justify-center gap-12">
             <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-gator-700" />
+              <Shield className="text-gator-700 h-5 w-5" />
               <span className="text-sm">Secure</span>
             </div>
             <div className="flex items-center gap-2">
-              <Lock className="w-5 h-5 text-gator-700" />
+              <Lock className="text-gator-700 h-5 w-5" />
               <span className="text-sm">Non-custodial</span>
             </div>
             <div className="flex items-center gap-2">
-              <Layers className="w-5 h-5 text-gator-700" />
+              <Layers className="text-gator-700 h-5 w-5" />
               <span className="text-sm">Built on blockchain</span>
             </div>
           </div>
         </div>
       </main>
 
-      <footer className="border-t border-jungle-100 bg-white py-4">
-        <div className="max-w-7xl mx-auto px-6 text-center text-sm text-jungle-500">
+      <footer className="border-jungle-100 border-t bg-white py-4">
+        <div className="text-jungle-500 mx-auto max-w-7xl px-6 text-center text-sm">
           Powered by Croody
         </div>
       </footer>

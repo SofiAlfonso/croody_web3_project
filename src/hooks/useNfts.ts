@@ -7,21 +7,9 @@ import type { NFT } from "@/lib/mock-data";
 import { mockNFTs } from "@/lib/mock-data";
 import { getNftCollectionAddress } from "@/lib/contracts";
 import { nftCollectionAbi } from "@/lib/abis/nftCollection";
+import { findMockByTokenId, toGatewayURL } from "@/lib/nft-utils";
 
 const DEMO_ADDRESS = "0xDEM0000000000000000000000000000000000000";
-
-function findMockByTokenId(id: string): NFT | undefined {
-  return mockNFTs.find(
-    (nft) => nft.id === id || nft.id === id.padStart(3, "0"),
-  );
-}
-
-function toGatewayURL(uri: string): string {
-  if (uri.startsWith("ipfs://")) {
-    return `https://ipfs.io/ipfs/${uri.replace("ipfs://", "")}`;
-  }
-  return uri;
-}
 
 async function fetchMetadata(uri: string): Promise<Partial<NFT> | null> {
   try {
@@ -67,13 +55,13 @@ async function readOwnedNftsFromChain(
     args: [owner],
   })) as bigint;
 
-  if (balance === 0n) {
+  if (balance === BigInt(0)) {
     return [];
   }
 
   const owned: NFT[] = [];
 
-  for (let i = 0n; i < balance; i += 1n) {
+  for (let i = BigInt(0); i < balance; i += BigInt(1)) {
     const tokenId = (await publicClient.readContract({
       address: nftAddress,
       abi: nftCollectionAbi,
@@ -96,7 +84,8 @@ async function readOwnedNftsFromChain(
       id: tokenIdString,
       ownerAddress: owner,
       name: metadata?.name || fromMock?.name || `Croody NFT #${tokenIdString}`,
-      image: metadata?.image || fromMock?.image || "https://picsum.photos/seed/croody-default/600/600",
+      image:
+        metadata?.image || fromMock?.image || "https://picsum.photos/seed/croody-default/600/600",
       collection: fromMock?.collection || "Croody Collection",
       description: metadata?.description || fromMock?.description,
       traits: metadata?.traits || fromMock?.traits,
@@ -192,7 +181,10 @@ export function useNftById(id?: string) {
           id: tokenId.toString(),
           ownerAddress,
           name: metadata?.name || fromMock?.name || `Croody NFT #${tokenId.toString()}`,
-          image: metadata?.image || fromMock?.image || "https://picsum.photos/seed/croody-default/600/600",
+          image:
+            metadata?.image ||
+            fromMock?.image ||
+            "https://picsum.photos/seed/croody-default/600/600",
           collection: fromMock?.collection || "Croody Collection",
           description: metadata?.description || fromMock?.description,
           traits: metadata?.traits || fromMock?.traits,

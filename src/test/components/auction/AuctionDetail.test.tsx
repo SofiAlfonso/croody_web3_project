@@ -1,0 +1,149 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import AuctionDetail from "../../../components/auction/AuctionDetail";
+import { useWalletContext } from "../../../context/WalletContext";
+import { useAuctionById } from "../../../hooks/useAuctions";
+import { useEndAuction } from "../../../hooks/useEndAuction";
+import { usePlaceBid } from "../../../hooks/usePlaceBid";
+import { useRouter } from "next/navigation";
+
+// Mock Next.js dependencies
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
+}));
+
+vi.mock("next/image", () => ({
+  __esModule: true,
+  default: ({ fill, ...props }: any) => <img {...props} alt={props.alt} />,
+}));
+
+// Mock Custom Hooks
+vi.mock("../../../context/WalletContext", () => ({
+  useWalletContext: vi.fn(),
+}));
+
+vi.mock("../../../hooks/useAuctions", () => ({
+  useAuctionById: vi.fn(),
+}));
+
+vi.mock("../../../hooks/useEndAuction", () => ({
+  useEndAuction: vi.fn(),
+}));
+
+vi.mock("../../../hooks/usePlaceBid", () => ({
+  usePlaceBid: vi.fn(),
+}));
+
+// Mock minimal structural dependencies to prevent cluttering the dom
+vi.mock("../../../components/shared/AppHeader", () => ({
+  default: ({ children }: any) => <header data-testid="app-header">{children}</header>,
+}));
+vi.mock("../../../components/shared/WalletBadge", () => ({
+  default: () => <div data-testid="wallet-badge" />,
+}));
+vi.mock("../../../components/shared/BackToDashboardLink", () => ({
+  default: () => <a data-testid="back-link">Back</a>,
+}));
+
+describe("AuctionDetail UI features", () => {
+  const mockRouterPush = vi.fn();
+  const mockPlaceBid = vi.fn();
+  const mockEndAuction = vi.fn();
+
+  const mockAuction = {
+    id: "1",
+    name: "Croody NFT #1",
+    image: "/mock-image.png",
+    currentBid: 100,
+    timeLeft: "2 hours",
+    ownerAddress: "0x123owner",
+    status: "Live",
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+
+    vi.mocked(useRouter).mockReturnValue({ push: mockRouterPush } as any);
+    
+    vi.mocked(useWalletContext).mockReturnValue({
+      walletAddress: "0x456bidder",
+    } as any);
+
+    vi.mocked(useAuctionById).mockReturnValue({
+      data: mockAuction,
+    } as any);
+
+    vi.mocked(usePlaceBid).mockReturnValue({
+      placeBid: mockPlaceBid,
+      isPending: false,
+    } as any);
+
+    vi.mocked(useEndAuction).mockReturnValue({
+      endAuction: mockEndAuction,
+      isPending: false,
+    } as any);
+  });
+
+  it("renders NotFoundState when auction is not found (Empty State Testing)", () => {
+    vi.mocked(useAuctionById).mockReturnValue({ data: undefined } as any);
+
+    render(<AuctionDetail id="999" />);
+    
+    expect(screen.getByText("Auction not found")).toBeDefined();
+    expect(screen.getByText("Choose an auction from the dashboard.")).toBeDefined();
+  });
+
+  it("renders auction details and Place Bid button for non-owner (Bidding Logic)", () => {
+    render(<AuctionDetail id="1" />);
+
+    expect(screen.getByText("Croody NFT #1")).toBeDefined();
+    expect(screen.getByText("100 CRD")).toBeDefined();
+    expect(screen.getByText("2 hours left")).toBeDefined();
+    expect(screen.getByRole("button", { name: "Place Bid" })).toBeDefined();
+    expect(screen.queryByRole("button", { name: /Close Auction/i })).toBeNull();
+  });
+
+  it("renders Close Auction button and owner view when wallet matches ownerAddress (Owner Gating)", () => {
+    vi.mocked(useWalletContext).mockReturnValue({
+      walletAddress: "0x123OWNER", // testing case insensitivity mapping
+    } as any);
+
+    render(<AuctionDetail id="1" />);
+
+    expect(screen.getByRole("button", { name: "Close Auction" })).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Place Bid" })).toBeNull();
+  });
+  
+  it("disables Close Auction button when transaction is pending", () => {
+    vi.mocked(useWalletContext).mockReturnValue({
+      walletAddress: "0x123owner",
+    } as any);
+    vi.mocked(useEndAuction).mockReturnValue({
+      endAuction: mockEndAuction,
+      isPending: true,
+    } as any);
+
+    render(<AuctionDetail id="1" />);
+
+    const closeBtn = screen.getByRole("button", { name: "Closing Auction..." });
+    expect((closeBtn as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("redirects on closing auction successfully (Redirect Logic)", async () => {
+    vi.mocked(useWalletContext).mockReturnValue({
+      walletAddress: "0x123owner",
+    } as any);
+    
+    mockEndAuction.mockResolvedValue({ success: true });
+
+    render(<AuctionDetail id="1" />);
+
+    const closeBtn = screen.getByRole("button", { name: "Close Auction" });
+    fireEvent.click(closeBtn);
+
+    await waitFor(() => {
+      expect(mockEndAuction).toHaveBeenCalledWith({ auctionId: "1" });
+      expect(mockRouterPush).toHaveBeenCalledWith("/dashboard");
+    });
+  });
+});

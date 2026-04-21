@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Clock } from "lucide-react";
+import { useWalletContext } from "@/context/WalletContext";
 import { useAuctionById } from "@/hooks/useAuctions";
+import { useEndAuction } from "@/hooks/useEndAuction";
 import { usePlaceBid } from "@/hooks/usePlaceBid";
 import AppHeader from "@/components/shared/AppHeader";
+import WalletBadge from "@/components/shared/WalletBadge";
 import BackToDashboardLink from "@/components/shared/BackToDashboardLink";
 import NotFoundState from "@/components/shared/NotFoundState";
 import ActionModal from "@/components/shared/ActionModal";
@@ -14,9 +19,12 @@ interface AuctionDetailProps {
 }
 
 export default function AuctionDetail({ id }: AuctionDetailProps) {
+  const router = useRouter();
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
+  const { walletAddress } = useWalletContext();
   const { data: auction } = useAuctionById(id);
   const { placeBid, isPending: isPlacingBid } = usePlaceBid();
+  const { endAuction, isPending: isEndingAuction } = useEndAuction();
 
   if (!auction) {
     return (
@@ -32,72 +40,107 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
     );
   }
 
+  const isOwner =
+    Boolean(walletAddress) && walletAddress?.toLowerCase() === auction.ownerAddress.toLowerCase();
+
   return (
     <div className="min-h-screen bg-neutral-50">
-      <AppHeader title="Auction" sticky>
+      <AppHeader
+        title="Auction"
+        sticky
+        rightClassName="flex items-center gap-3"
+      >
         <BackToDashboardLink />
+        <WalletBadge />
       </AppHeader>
 
-      <main className="max-w-6xl mx-auto px-6 py-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden">
-          <div className="aspect-square bg-neutral-100">
-            <img src={auction.image} alt={auction.name} className="w-full h-full object-cover" />
+      <main className="mx-auto grid max-w-6xl gap-8 px-6 py-10 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+          <div className="relative aspect-square bg-neutral-100">
+            <Image
+              src={auction.image}
+              alt={auction.name}
+              className="h-full w-full object-cover"
+              fill
+            />
           </div>
           <div className="p-6">
             <div className="text-2xl font-semibold text-neutral-900">{auction.name}</div>
-            <div className="text-sm text-neutral-500 mt-2">Auction ID: {auction.id}</div>
+            <div className="mt-2 text-sm text-neutral-500">Auction ID: {auction.id}</div>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white border border-neutral-200 rounded-2xl p-6">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-neutral-500">Current Bid</div>
-                <div className="text-3xl font-semibold text-neutral-900">{auction.currentBid} CRD</div>
+                <div className="text-3xl font-semibold text-neutral-900">
+                  {auction.currentBid} CRD
+                </div>
               </div>
               <div className="flex items-center gap-2 text-sm text-neutral-600">
-                <Clock className="w-4 h-4" />
+                <Clock className="h-4 w-4" />
                 {auction.timeLeft} left
               </div>
             </div>
             <div className="mt-6 grid gap-3">
-              <button
-                className="w-full px-5 py-3 rounded-lg bg-gator-100 text-gator-700 text-sm hover:bg-gator-300 transition-colors text-center"
-                type="button"
-                onClick={() => setIsBidDialogOpen(true)}
-              >
-                Place Bid
-              </button>
-              <button
-                className="w-full px-5 py-3 rounded-lg border border-neutral-200 text-sm text-neutral-700 hover:bg-neutral-50"
-                type="button"
-              >
-                {/* TODO: Implement auto-bid strategy */}
-                Set Auto-Bid
-              </button>
+              {isOwner ? (
+                <button
+                  className="bg-gator-500 hover:bg-gator-700 w-full rounded-lg px-5 py-3 text-center text-sm text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                  type="button"
+                  disabled={isEndingAuction}
+                  onClick={async () => {
+                    const result = await endAuction({ auctionId: auction.id });
+                    if (result.success) {
+                      router.push("/dashboard");
+                    }
+                  }}
+                >
+                  {isEndingAuction ? "Closing Auction..." : "Close Auction"}
+                </button>
+              ) : (
+                <>
+                  <button
+                    className="bg-gator-100 text-gator-700 hover:bg-gator-300 w-full rounded-lg px-5 py-3 text-center text-sm transition-colors"
+                    type="button"
+                    onClick={() => setIsBidDialogOpen(true)}
+                  >
+                    Place Bid
+                  </button>
+                  <button
+                    className="w-full rounded-lg border border-neutral-200 px-5 py-3 text-sm text-neutral-700 hover:bg-neutral-50"
+                    type="button"
+                  >
+                    {/* TODO: Implement auto-bid strategy */}
+                    Set Auto-Bid
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </main>
 
-      <ActionModal
-        isOpen={isBidDialogOpen}
-        title="Place a Bid"
-        description="Enter your bid amount in CRD."
-        cancelLabel="Cancel"
-        confirmLabel="Submit Bid"
-        isConfirming={isPlacingBid}
-        onCancel={() => setIsBidDialogOpen(false)}
-        onConfirm={async () => {
-          // TODO: Wire bid amount input from dialog form state.
-          await placeBid({
-            auctionId: auction.id,
-            amount: String(auction.currentBid + 10),
-          });
-          setIsBidDialogOpen(false);
-        }}
-      />
+      {!isOwner ? (
+        <ActionModal
+          isOpen={isBidDialogOpen}
+          title="Place a Bid"
+          description="Enter your bid amount in CRD."
+          cancelLabel="Cancel"
+          confirmLabel="Submit Bid"
+          isConfirming={isPlacingBid}
+          onCancel={() => setIsBidDialogOpen(false)}
+          onConfirm={async () => {
+            // TODO: Wire bid amount input from dialog form state.
+            await placeBid({
+              auctionId: auction.id,
+              amount: String(auction.currentBid + 10),
+            });
+            setIsBidDialogOpen(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
