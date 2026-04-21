@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Clock } from "lucide-react";
+import { useWalletContext } from "@/context/WalletContext";
 import { useAuctionById } from "@/hooks/useAuctions";
+import { useEndAuction } from "@/hooks/useEndAuction";
 import { usePlaceBid } from "@/hooks/usePlaceBid";
 import AppHeader from "@/components/shared/AppHeader";
 import WalletBadge from "@/components/shared/WalletBadge";
@@ -16,9 +19,12 @@ interface AuctionDetailProps {
 }
 
 export default function AuctionDetail({ id }: AuctionDetailProps) {
+  const router = useRouter();
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
+  const { walletAddress } = useWalletContext();
   const { data: auction } = useAuctionById(id);
   const { placeBid, isPending: isPlacingBid } = usePlaceBid();
+  const { endAuction, isPending: isEndingAuction } = useEndAuction();
 
   if (!auction) {
     return (
@@ -33,6 +39,9 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
       </div>
     );
   }
+
+  const isOwner =
+    Boolean(walletAddress) && walletAddress?.toLowerCase() === auction.ownerAddress.toLowerCase();
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -76,42 +85,62 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
               </div>
             </div>
             <div className="mt-6 grid gap-3">
-              <button
-                className="bg-gator-100 text-gator-700 hover:bg-gator-300 w-full rounded-lg px-5 py-3 text-center text-sm transition-colors"
-                type="button"
-                onClick={() => setIsBidDialogOpen(true)}
-              >
-                Place Bid
-              </button>
-              <button
-                className="w-full rounded-lg border border-neutral-200 px-5 py-3 text-sm text-neutral-700 hover:bg-neutral-50"
-                type="button"
-              >
-                {/* TODO: Implement auto-bid strategy */}
-                Set Auto-Bid
-              </button>
+              {isOwner ? (
+                <button
+                  className="bg-gator-500 hover:bg-gator-700 w-full rounded-lg px-5 py-3 text-center text-sm text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                  type="button"
+                  disabled={isEndingAuction}
+                  onClick={async () => {
+                    const result = await endAuction({ auctionId: auction.id });
+                    if (result.success) {
+                      router.push("/dashboard");
+                    }
+                  }}
+                >
+                  {isEndingAuction ? "Closing Auction..." : "Close Auction"}
+                </button>
+              ) : (
+                <>
+                  <button
+                    className="bg-gator-100 text-gator-700 hover:bg-gator-300 w-full rounded-lg px-5 py-3 text-center text-sm transition-colors"
+                    type="button"
+                    onClick={() => setIsBidDialogOpen(true)}
+                  >
+                    Place Bid
+                  </button>
+                  <button
+                    className="w-full rounded-lg border border-neutral-200 px-5 py-3 text-sm text-neutral-700 hover:bg-neutral-50"
+                    type="button"
+                  >
+                    {/* TODO: Implement auto-bid strategy */}
+                    Set Auto-Bid
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </main>
 
-      <ActionModal
-        isOpen={isBidDialogOpen}
-        title="Place a Bid"
-        description="Enter your bid amount in CRD."
-        cancelLabel="Cancel"
-        confirmLabel="Submit Bid"
-        isConfirming={isPlacingBid}
-        onCancel={() => setIsBidDialogOpen(false)}
-        onConfirm={async () => {
-          // TODO: Wire bid amount input from dialog form state.
-          await placeBid({
-            auctionId: auction.id,
-            amount: String(auction.currentBid + 10),
-          });
-          setIsBidDialogOpen(false);
-        }}
-      />
+      {!isOwner ? (
+        <ActionModal
+          isOpen={isBidDialogOpen}
+          title="Place a Bid"
+          description="Enter your bid amount in CRD."
+          cancelLabel="Cancel"
+          confirmLabel="Submit Bid"
+          isConfirming={isPlacingBid}
+          onCancel={() => setIsBidDialogOpen(false)}
+          onConfirm={async () => {
+            // TODO: Wire bid amount input from dialog form state.
+            await placeBid({
+              auctionId: auction.id,
+              amount: String(auction.currentBid + 10),
+            });
+            setIsBidDialogOpen(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

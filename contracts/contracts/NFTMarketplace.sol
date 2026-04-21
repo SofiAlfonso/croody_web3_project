@@ -24,6 +24,19 @@ contract NFTMarketplace is ReentrancyGuard {
         bool cancelled;
     }
 
+    struct AuctionView {
+        uint256 auctionId;
+        address seller;
+        address nftContract;
+        uint256 tokenId;
+        uint256 startPrice;
+        uint256 highestBid;
+        address highestBidder;
+        uint256 endTime;
+        bool ended;
+        bool cancelled;
+    }
+
     uint256 private _nextAuctionId = 1;
     mapping(uint256 => Auction) public auctions;
 
@@ -172,5 +185,45 @@ contract NFTMarketplace is ReentrancyGuard {
             a.startPrice, a.highestBid, a.highestBidder,
             a.endTime, a.ended, a.cancelled
         );
+    }
+
+    function getLastAuctionId() external view returns (uint256) {
+        return _nextAuctionId - 1;
+    }
+
+    function getAllActiveAuctions() external view returns (AuctionView[] memory) {
+        uint256 lastAuctionId = _nextAuctionId - 1;
+        uint256 activeCount = 0;
+
+        for (uint256 i = 1; i <= lastAuctionId; i++) {
+            Auction storage a = auctions[i];
+            if (a.seller != address(0) && !a.ended && !a.cancelled && block.timestamp < a.endTime) {
+                activeCount++;
+            }
+        }
+
+        AuctionView[] memory activeAuctions = new AuctionView[](activeCount);
+        uint256 index = 0;
+
+        for (uint256 i = 1; i <= lastAuctionId; i++) {
+            Auction storage a = auctions[i];
+            if (a.seller != address(0) && !a.ended && !a.cancelled && block.timestamp < a.endTime) {
+                activeAuctions[index] = AuctionView({
+                    auctionId: i,
+                    seller: a.seller,
+                    nftContract: a.nftContract,
+                    tokenId: a.tokenId,
+                    startPrice: a.startPrice,
+                    highestBid: a.highestBid,
+                    highestBidder: a.highestBidder,
+                    endTime: a.endTime,
+                    ended: a.ended,
+                    cancelled: a.cancelled
+                });
+                index++;
+            }
+        }
+
+        return activeAuctions;
     }
 }

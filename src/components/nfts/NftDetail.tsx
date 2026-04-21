@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Tag, TrendingUp, Layers, ExternalLink } from "lucide-react";
 import { useNftById } from "@/hooks/useNfts";
 import { useCreateAuction } from "@/hooks/useCreateAuction";
@@ -16,12 +17,14 @@ interface NftDetailProps {
 }
 
 export default function NftDetail({ id }: NftDetailProps) {
+  const router = useRouter();
   const { data: nft, isLoading } = useNftById(id);
   const { createAuction, isPending: isCreatingAuction } = useCreateAuction();
   const { transferNft, isPending: isTransferringNft } = useTransferNft();
   const [isAuctionDialogOpen, setIsAuctionDialogOpen] = useState(false);
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const [auctionMinBid, setAuctionMinBid] = useState("100");
+  const [auctionDuration, setAuctionDuration] = useState("24");
   const [transferToWallet, setTransferToWallet] = useState("");
 
   const rarityColor = (rarity?: string) => {
@@ -216,26 +219,48 @@ export default function NftDetail({ id }: NftDetailProps) {
         isConfirming={isCreatingAuction}
         onCancel={() => setIsAuctionDialogOpen(false)}
         onConfirm={async () => {
-          await createAuction({
+          const result = await createAuction({
             nftId: nft.id,
             minimumBid: auctionMinBid,
-            durationHours: 24,
+            durationHours: Number.parseInt(auctionDuration, 10),
           });
-          setIsAuctionDialogOpen(false);
+          if (result.success) {
+            setIsAuctionDialogOpen(false);
+            if (result.auctionId) {
+              router.push(`/auction/${result.auctionId}`);
+              return;
+            }
+            router.push("/dashboard");
+          }
         }}
       >
-        <div className="mt-3">
-          <label htmlFor="auction-min-bid" className="text-jungle-600 mb-1 block text-sm">
-            Minimum Bid (CRD)
-          </label>
-          <input
-            id="auction-min-bid"
-            type="number"
-            min="1"
-            value={auctionMinBid}
-            onChange={(e) => setAuctionMinBid(e.target.value)}
-            className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
-          />
+        <div className="mt-3 space-y-4">
+          <div>
+            <label htmlFor="auction-min-bid" className="text-jungle-600 mb-1 block text-sm">
+              Minimum Bid (CRD)
+            </label>
+            <input
+              id="auction-min-bid"
+              type="number"
+              min="1"
+              value={auctionMinBid}
+              onChange={(e) => setAuctionMinBid(e.target.value)}
+              className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label htmlFor="auction-duration" className="text-jungle-600 mb-1 block text-sm">
+              Duration (Hours)
+            </label>
+            <input
+              id="auction-duration"
+              type="number"
+              min="1"
+              value={auctionDuration}
+              onChange={(e) => setAuctionDuration(e.target.value)}
+              className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+            />
+          </div>
         </div>
       </ActionModal>
 

@@ -4,6 +4,7 @@ type DeployedAddresses = {
   contracts?: {
     nftCollection?: string;
     projectToken?: string;
+    nftMarketplace?: string;
   };
 };
 
@@ -30,6 +31,13 @@ export function getProjectTokenAddress(): `0x${string}` | null {
   return toChecksumAddress(candidate);
 }
 
+export function getMarketplaceAddress(): `0x${string}` | null {
+  const candidate =
+    process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS ||
+    deployed.contracts?.nftMarketplace;
+  return toChecksumAddress(candidate);
+}
+
 export const ERC20_ABI = [
   {
     name: "balanceOf",
@@ -51,6 +59,16 @@ export const ERC20_ABI = [
     stateMutability: "nonpayable",
     inputs: [
       { name: "to", type: "address" },
+      { name: "value", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+  },
+  {
+    name: "approve",
+    type: "function",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "spender", type: "address" },
       { name: "value", type: "uint256" },
     ],
     outputs: [{ name: "", type: "bool" }],
