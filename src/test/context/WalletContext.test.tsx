@@ -9,7 +9,8 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 
 describe("WalletContext", () => {
   beforeEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
+    vi.mocked(window.ethereum!.request).mockResolvedValue([]);
   });
 
   it("initial state: walletAddress null, isConnected false, isDemo false, chainId null", () => {
