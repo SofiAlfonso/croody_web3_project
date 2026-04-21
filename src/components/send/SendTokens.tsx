@@ -10,8 +10,12 @@ import BackToDashboardLink from "@/components/shared/BackToDashboardLink";
 export default function SendTokens() {
   const router = useRouter();
   const { walletAddress, isConnected } = useWalletContext();
-  const [recipient] = useState("0xB7a...4C2");
-  const [amount] = useState("125");
+  const [recipient, setRecipient] = useState("");
+  const [amount, setAmount] = useState("");
+  const [feedback, setFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const { sendTokens, isPending: isSendingTokens } = useSendTokens();
 
   useEffect(() => {
@@ -25,6 +29,30 @@ export default function SendTokens() {
   const shortWallet = walletAddress
     ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
     : "";
+
+  const canSend = recipient.trim().length > 0 && amount.trim().length > 0 && !isSendingTokens;
+
+  const handleSend = async () => {
+    setFeedback(null);
+    const result = await sendTokens({
+      fromWallet: walletAddress!,
+      toWallet: recipient,
+      amount,
+    });
+
+    if (result.success) {
+      setFeedback({
+        type: "success",
+        message: result.hash
+          ? `Tokens sent! Tx: ${result.hash.slice(0, 10)}...`
+          : "Tokens sent successfully",
+      });
+      setRecipient("");
+      setAmount("");
+    } else {
+      setFeedback({ type: "error", message: result.error });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -45,22 +73,36 @@ export default function SendTokens() {
             <div>
               <label className="text-sm text-neutral-600">Recipient Address</label>
               <input
-                className="mt-2 w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-700"
+                className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-300"
                 placeholder="0x..."
-                readOnly
                 value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
               />
             </div>
             <div>
               <label className="text-sm text-neutral-600">Amount (CRD)</label>
               <input
-                className="mt-2 w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-700"
+                className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-300"
                 placeholder="0.00"
-                readOnly
+                type="number"
+                min="0"
                 value={amount}
+                onChange={(e) => setAmount(e.target.value)}
               />
             </div>
           </div>
+
+          {feedback && (
+            <div
+              className={`rounded-lg border px-4 py-3 text-sm ${
+                feedback.type === "success"
+                  ? "border-green-200 bg-green-50 text-green-700"
+                  : "border-red-200 bg-red-50 text-red-700"
+              }`}
+            >
+              {feedback.message}
+            </div>
+          )}
 
           <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600">
             Network fee estimate: 0.002 CRD · Estimated arrival: ~30 seconds
@@ -70,20 +112,19 @@ export default function SendTokens() {
             <button
               className="rounded-lg border border-neutral-200 px-5 py-2 text-sm text-neutral-700 hover:bg-neutral-100"
               type="button"
+              onClick={() => {
+                setRecipient("");
+                setAmount("");
+                setFeedback(null);
+              }}
             >
-              Save Draft
+              Clear
             </button>
             <button
-              className="bg-gator-100 text-gator-700 hover:bg-gator-300 inline-flex rounded-lg px-5 py-2 text-sm transition-colors"
+              className="bg-gator-100 text-gator-700 hover:bg-gator-300 inline-flex rounded-lg px-5 py-2 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               type="button"
-              disabled={isSendingTokens}
-              onClick={async () => {
-                await sendTokens({
-                  fromWallet: walletAddress!,
-                  toWallet: recipient,
-                  amount,
-                });
-              }}
+              disabled={!canSend}
+              onClick={handleSend}
             >
               {isSendingTokens ? "Sending..." : "Send Tokens"}
             </button>
