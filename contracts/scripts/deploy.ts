@@ -19,6 +19,11 @@ async function main() {
 
   const projectTokenAddress = await projectToken.getAddress();
 
+  const marketplaceFactory = await ethers.getContractFactory("NFTMarketplace");
+  const marketplace = await marketplaceFactory.deploy(projectTokenAddress);
+  await marketplace.waitForDeployment();
+  const marketplaceAddress = await marketplace.getAddress();
+
   const seedURIs = [
     "ipfs://bafkreifakecroody001/metadata.json",
     "ipfs://bafkreifakecroody002/metadata.json",
@@ -48,6 +53,7 @@ async function main() {
     contracts: {
       nftCollection: nftCollectionAddress,
       projectToken: projectTokenAddress,
+      nftMarketplace: marketplaceAddress,
     },
   };
 
@@ -68,6 +74,7 @@ async function main() {
 
   console.log("NFTCollection deployed at:", nftCollectionAddress);
   console.log("ProjectToken deployed at:", projectTokenAddress);
+  console.log("NFTMarketplace deployed at:", marketplaceAddress);
   console.log("Deployment artifacts written to:");
   console.log("-", networkFile);
   console.log("-", frontendArtifact);

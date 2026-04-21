@@ -22,6 +22,7 @@ export default function NftDetail({ id }: NftDetailProps) {
   const [isAuctionDialogOpen, setIsAuctionDialogOpen] = useState(false);
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const [auctionMinBid, setAuctionMinBid] = useState("100");
+  const [auctionDuration, setAuctionDuration] = useState("24");
   const [transferToWallet, setTransferToWallet] = useState("");
 
   const rarityColor = (rarity?: string) => {
@@ -218,23 +219,38 @@ export default function NftDetail({ id }: NftDetailProps) {
           await createAuction({
             nftId: nft.id,
             minimumBid: auctionMinBid,
-            durationHours: 24,
+            durationHours: parseInt(auctionDuration),
           });
           setIsAuctionDialogOpen(false);
         }}
       >
-        <div className="mt-3">
-          <label htmlFor="auction-min-bid" className="block text-sm text-jungle-600 mb-1">
-            Minimum Bid (CRD)
-          </label>
-          <input
-            id="auction-min-bid"
-            type="number"
-            min="1"
-            value={auctionMinBid}
-            onChange={(e) => setAuctionMinBid(e.target.value)}
-            className="w-full px-3 py-2 border border-jungle-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gator-300"
-          />
+        <div className="mt-3 space-y-4">
+          <div>
+            <label htmlFor="auction-min-bid" className="block text-sm text-jungle-600 mb-1">
+              Minimum Bid (CRD)
+            </label>
+            <input
+              id="auction-min-bid"
+              type="number"
+              min="1"
+              value={auctionMinBid}
+              onChange={(e) => setAuctionMinBid(e.target.value)}
+              className="w-full px-3 py-2 border border-jungle-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gator-300"
+            />
+          </div>
+          <div>
+            <label htmlFor="auction-duration" className="block text-sm text-jungle-600 mb-1">
+              Duration (Hours)
+            </label>
+            <input
+              id="auction-duration"
+              type="number"
+              min="1"
+              value={auctionDuration}
+              onChange={(e) => setAuctionDuration(e.target.value)}
+              className="w-full px-3 py-2 border border-jungle-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gator-300"
+            />
+          </div>
         </div>
       </ActionModal>
 
