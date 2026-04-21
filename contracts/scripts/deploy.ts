@@ -43,6 +43,13 @@ async function main() {
     await tx.wait();
   }
 
+  // Distribute initial CRD tokens for testing
+  const initialCRD = ethers.parseEther("10000"); // 10,000 CRD each
+  console.log("Distributing 10,000 CRD to test accounts...");
+  await (await projectToken.distribute(deployer.address, initialCRD)).wait();
+  await (await projectToken.distribute(ownerA.address, initialCRD)).wait();
+  await (await projectToken.distribute(ownerB.address, initialCRD)).wait();
+
   const deploymentData = {
     network: (await ethers.provider.getNetwork()).name,
     chainId: Number((await ethers.provider.getNetwork()).chainId),
