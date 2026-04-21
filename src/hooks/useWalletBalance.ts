@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 import { useWalletContext } from "@/context/WalletContext";
+import { formatBalance } from "@/lib/balance-utils";
 import deployedAddresses from "@/lib/deployed-addresses.json";
 
 const ERC20_ABI = [
@@ -29,16 +30,6 @@ type WalletBalanceResult = {
   isLoading: boolean;
   isError: boolean;
 };
-
-function formatBalance(value: string): string {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric)) return "0";
-
-  return numeric.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 4,
-  });
-}
 
 export function useWalletBalance(): WalletBalanceResult {
   const { walletAddress, isConnected, isDemo } = useWalletContext();

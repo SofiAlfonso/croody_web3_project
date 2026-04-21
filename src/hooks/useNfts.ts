@@ -7,19 +7,9 @@ import type { NFT } from "@/lib/mock-data";
 import { mockNFTs } from "@/lib/mock-data";
 import { getNftCollectionAddress } from "@/lib/contracts";
 import { nftCollectionAbi } from "@/lib/abis/nftCollection";
+import { findMockByTokenId, toGatewayURL } from "@/lib/nft-utils";
 
 const DEMO_ADDRESS = "0xDEM0000000000000000000000000000000000000";
-
-function findMockByTokenId(id: string): NFT | undefined {
-  return mockNFTs.find((nft) => nft.id === id || nft.id === id.padStart(3, "0"));
-}
-
-function toGatewayURL(uri: string): string {
-  if (uri.startsWith("ipfs://")) {
-    return `https://ipfs.io/ipfs/${uri.replace("ipfs://", "")}`;
-  }
-  return uri;
-}
 
 async function fetchMetadata(uri: string): Promise<Partial<NFT> | null> {
   try {

@@ -1,0 +1,87 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { renderHook, act } from "@testing-library/react";
+import { WalletProvider, useWalletContext } from "@/context/WalletContext";
+import type { ReactNode } from "react";
+
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <WalletProvider>{children}</WalletProvider>
+);
+
+describe("WalletContext", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("initial state: walletAddress null, isConnected false, isDemo false, chainId null", () => {
+    const { result } = renderHook(() => useWalletContext(), { wrapper });
+    expect(result.current.walletAddress).to.be.null;
+    expect(result.current.isConnected).to.be.false;
+    expect(result.current.isDemo).to.be.false;
+    expect(result.current.chainId).to.be.null;
+  });
+
+  it("connectDemo sets DEMO_ADDRESS and Sepolia chainId", () => {
+    const { result } = renderHook(() => useWalletContext(), { wrapper });
+    act(() => {
+      result.current.connectDemo();
+    });
+    expect(result.current.walletAddress).to.equal(
+      "0xDEM0000000000000000000000000000000000000",
+    );
+    expect(result.current.isDemo).to.be.true;
+    expect(result.current.chainId).to.equal("0xaa36a7");
+    expect(result.current.isConnected).to.be.true;
+  });
+
+  it("disconnectWallet clears address and chainId", () => {
+    const { result } = renderHook(() => useWalletContext(), { wrapper });
+    act(() => {
+      result.current.connectDemo();
+    });
+    act(() => {
+      result.current.disconnectWallet();
+    });
+    expect(result.current.walletAddress).to.be.null;
+    expect(result.current.isConnected).to.be.false;
+    expect(result.current.chainId).to.be.null;
+  });
+
+  it("isDemo is false when wallet is manually set to an address", () => {
+    const { result } = renderHook(() => useWalletContext(), { wrapper });
+    act(() => {
+      result.current.connectDemo();
+    });
+    expect(result.current.isDemo).to.be.true;
+
+    act(() => {
+      result.current.disconnectWallet();
+    });
+    expect(result.current.isDemo).to.be.false;
+  });
+
+  it("useWalletContext throws when used outside WalletProvider", () => {
+    expect(() => {
+      renderHook(() => useWalletContext());
+    }).toThrow("useWalletContext must be used within a WalletProvider");
+  });
+
+  it("connectWallet function exists and is callable", () => {
+    const { result } = renderHook(() => useWalletContext(), { wrapper });
+    expect(result.current.connectWallet).toBeDefined();
+    expect(typeof result.current.connectWallet).to.equal("function");
+  });
+
+  it("isConnecting state is available", () => {
+    const { result } = renderHook(() => useWalletContext(), { wrapper });
+    expect(result.current.isConnecting).to.be.false;
+  });
+
+  it("chainId can be set and retrieved", () => {
+    const { result } = renderHook(() => useWalletContext(), { wrapper });
+    expect(result.current.chainId).to.be.null;
+    act(() => {
+      result.current.connectDemo();
+    });
+    expect(result.current.chainId).to.equal("0xaa36a7");
+  });
+});
