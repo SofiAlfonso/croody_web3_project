@@ -5,6 +5,7 @@ import { formatUnits, parseAbi } from "viem";
 import { useReadContract } from "wagmi";
 import { mockAuctions, type Auction } from "@/lib/mock-data";
 import { getMarketplaceAddress } from "@/lib/contracts";
+import { findMockByTokenId } from "@/lib/nft-utils";
 
 const marketplaceAbi = parseAbi([
   "function getAllActiveAuctions() view returns ((uint256 auctionId,address seller,address nftContract,uint256 tokenId,uint256 startPrice,uint256 highestBid,address highestBidder,uint256 endTime,bool ended,bool cancelled)[])",
@@ -115,11 +116,12 @@ function toUiAuction(rawInput: ActiveAuctionRaw | readonly unknown[] | unknown):
   const raw = decodeActiveAuction(rawInput);
   const tokenId = Number(raw.tokenId);
   const currentBidRaw = raw.highestBid > 0n ? raw.highestBid : raw.startPrice;
+  const mockItem = findMockByTokenId(tokenId.toString());
 
   return {
     id: raw.auctionId.toString(),
-    name: `Croody NFT #${tokenId}`,
-    image: `https://picsum.photos/seed/auction-${tokenId}/600/600`,
+    name: mockItem?.name || `Croody NFT #${tokenId}`,
+    image: mockItem?.image || `https://picsum.photos/seed/auction-${tokenId}/600/600`,
     currentBid: Number(formatUnits(currentBidRaw, 18)),
     timeLeft: formatTimeLeft(raw.endTime),
     ownerAddress: raw.seller,
