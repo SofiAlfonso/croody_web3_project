@@ -50,15 +50,23 @@ describe("AuctionDetail UI features", () => {
   const mockPlaceBid = vi.fn();
   const mockEndAuction = vi.fn();
 
+  const futureEndTime = Math.floor(Date.now() / 1000) + 7200;
+  const pastEndTime = Math.floor(Date.now() / 1000) - 1;
+
   const mockAuction = {
     id: "1",
     name: "Croody NFT #1",
     image: "/mock-image.png",
     currentBid: 100,
+    startPrice: 50,
     timeLeft: "2 hours",
+    endTime: futureEndTime,
     ownerAddress: "0x123owner",
+    highestBidder: null,
     status: "Live",
   };
+
+  const expiredAuction = { ...mockAuction, endTime: pastEndTime, timeLeft: "0m" };
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -107,17 +115,19 @@ describe("AuctionDetail UI features", () => {
     vi.mocked(useWalletContext).mockReturnValue({
       walletAddress: "0x123OWNER", // testing case insensitivity mapping
     } as any);
+    vi.mocked(useAuctionById).mockReturnValue({ data: expiredAuction } as any);
 
     render(<AuctionDetail id="1" />);
 
     expect(screen.getByRole("button", { name: "Close Auction" })).toBeDefined();
     expect(screen.queryByRole("button", { name: "Place Bid" })).toBeNull();
   });
-  
+
   it("disables Close Auction button when transaction is pending", () => {
     vi.mocked(useWalletContext).mockReturnValue({
       walletAddress: "0x123owner",
     } as any);
+    vi.mocked(useAuctionById).mockReturnValue({ data: expiredAuction } as any);
     vi.mocked(useEndAuction).mockReturnValue({
       endAuction: mockEndAuction,
       isPending: true,
@@ -133,7 +143,8 @@ describe("AuctionDetail UI features", () => {
     vi.mocked(useWalletContext).mockReturnValue({
       walletAddress: "0x123owner",
     } as any);
-    
+    vi.mocked(useAuctionById).mockReturnValue({ data: expiredAuction } as any);
+
     mockEndAuction.mockResolvedValue({ success: true });
 
     render(<AuctionDetail id="1" />);
