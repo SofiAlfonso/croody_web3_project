@@ -40,7 +40,7 @@ export default function ActionModal({
             {cancelLabel}
           </button>
           <button
-            className="bg-gator-500 hover:bg-gator-700 flex-1 rounded-lg px-4 py-2 text-sm text-white"
+            className="bg-gator-700 hover:opacity-90 flex-1 rounded-lg px-4 py-2 text-sm text-white"
             type="button"
             disabled={isConfirming}
             onClick={onConfirm}

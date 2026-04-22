@@ -151,7 +151,7 @@ export default function NftDetail({ id }: NftDetailProps) {
             )}
 
             {nft.description && (
-              <p className="text-jungle-600 text-sm leading-relaxed">{nft.description}</p>
+              <p className="text-jungle-500 text-sm leading-relaxed">{nft.description}</p>
             )}
           </div>
 
@@ -236,7 +236,7 @@ export default function NftDetail({ id }: NftDetailProps) {
       >
         <div className="mt-3 space-y-4">
           <div>
-            <label htmlFor="auction-min-bid" className="text-jungle-600 mb-1 block text-sm">
+            <label htmlFor="auction-min-bid" className="text-jungle-500 mb-1 block text-sm">
               Minimum Bid (CRD)
             </label>
             <input
@@ -249,7 +249,7 @@ export default function NftDetail({ id }: NftDetailProps) {
             />
           </div>
           <div>
-            <label htmlFor="auction-duration" className="text-jungle-600 mb-1 block text-sm">
+            <label htmlFor="auction-duration" className="text-jungle-500 mb-1 block text-sm">
               Duration (Hours)
             </label>
             <input
@@ -290,7 +290,7 @@ export default function NftDetail({ id }: NftDetailProps) {
       >
         <div className="mt-3 space-y-3">
           <div>
-            <label htmlFor="transfer-to-wallet" className="text-jungle-600 mb-1 block text-sm">
+            <label htmlFor="transfer-to-wallet" className="text-jungle-500 mb-1 block text-sm">
               Recipient Wallet Address
             </label>
             <input
@@ -299,7 +299,7 @@ export default function NftDetail({ id }: NftDetailProps) {
               placeholder="0x..."
               value={transferToWallet}
               onChange={(e) => setTransferToWallet(e.target.value)}
-              className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 font-mono text-sm focus:ring-2 focus:outline-none"
+              className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 font-mono text-sm text-neutral-900 focus:ring-2 focus:outline-none"
             />
           </div>
           {transferNftError && (
