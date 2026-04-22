@@ -2,8 +2,14 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { usePublicClient } from "wagmi";
+import { createPublicClient, http } from "viem";
+import { hardhat } from "viem/chains";
 import type { NFT } from "@/lib/mock-data";
+
+const publicClient = createPublicClient({
+  chain: hardhat,
+  transport: http(process.env.NEXT_PUBLIC_RPC_URL ?? "http://127.0.0.1:8545"),
+});
 import { mockNFTs } from "@/lib/mock-data";
 import { getNftCollectionAddress } from "@/lib/contracts";
 import { nftCollectionAbi } from "@/lib/abis/nftCollection";
@@ -39,10 +45,7 @@ async function fetchMetadata(uri: string): Promise<Partial<NFT> | null> {
   }
 }
 
-async function readOwnedNftsFromChain(
-  owner: `0x${string}`,
-  publicClient: NonNullable<ReturnType<typeof usePublicClient>>,
-): Promise<NFT[]> {
+async function readOwnedNftsFromChain(owner: `0x${string}`): Promise<NFT[]> {
   const nftAddress = getNftCollectionAddress();
   if (!nftAddress) {
     return [];
@@ -97,7 +100,6 @@ async function readOwnedNftsFromChain(
 }
 
 export function useMyNfts(walletAddress?: string | null) {
-  const publicClient = usePublicClient();
   const normalizedAddress = useMemo(() => {
     if (!walletAddress || !walletAddress.startsWith("0x")) return null;
     return walletAddress as `0x${string}`;
@@ -116,21 +118,7 @@ export function useMyNfts(walletAddress?: string | null) {
         );
       }
 
-      if (!publicClient) {
-        return [] as NFT[];
-      }
-
-      const onChain = await readOwnedNftsFromChain(normalizedAddress, publicClient);
-
-      // Fallback while contract/deploy metadata is still under active development.
-      if (onChain.length === 0) {
-        return mockNFTs.slice(0, 3).map((nft) => ({
-          ...nft,
-          ownerAddress: normalizedAddress,
-        }));
-      }
-
-      return onChain;
+      return await readOwnedNftsFromChain(normalizedAddress);
     },
   });
 
@@ -142,8 +130,6 @@ export function useMyNfts(walletAddress?: string | null) {
 }
 
 export function useNftById(id?: string) {
-  const publicClient = usePublicClient();
-
   const query = useQuery({
     queryKey: ["nft-by-id", id],
     enabled: Boolean(id),
@@ -153,7 +139,7 @@ export function useNftById(id?: string) {
       const fromMock = findMockByTokenId(id);
       const nftAddress = getNftCollectionAddress();
 
-      if (!nftAddress || !publicClient) {
+      if (!nftAddress) {
         return fromMock ?? null;
       }
 

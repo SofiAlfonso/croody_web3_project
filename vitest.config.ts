@@ -14,6 +14,7 @@ export default defineConfig({
         "src/lib/nft-utils.ts",
         "src/lib/balance-utils.ts",
         "src/hooks/useSendTokens.ts",
+        "src/hooks/useTransferNft.ts",
         "src/hooks/useWalletBalance.ts",
         "src/context/WalletContext.tsx",
       ],

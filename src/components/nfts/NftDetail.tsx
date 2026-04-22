@@ -20,7 +20,7 @@ export default function NftDetail({ id }: NftDetailProps) {
   const router = useRouter();
   const { data: nft, isLoading } = useNftById(id);
   const { createAuction, isPending: isCreatingAuction } = useCreateAuction();
-  const { transferNft, isPending: isTransferringNft } = useTransferNft();
+  const { transferNft, isPending: isTransferringNft, error: transferNftError } = useTransferNft();
   const [isAuctionDialogOpen, setIsAuctionDialogOpen] = useState(false);
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const [auctionMinBid, setAuctionMinBid] = useState("100");
@@ -272,27 +272,41 @@ export default function NftDetail({ id }: NftDetailProps) {
         cancelLabel="Cancel"
         confirmLabel="Transfer"
         isConfirming={isTransferringNft}
-        onCancel={() => setIsTransferDialogOpen(false)}
-        onConfirm={async () => {
-          await transferNft({
-            nftId: nft.id,
-            toWallet: transferToWallet || "0xB7a...4C2",
-          });
+        onCancel={() => {
           setIsTransferDialogOpen(false);
+          setTransferToWallet("");
+        }}
+        onConfirm={async () => {
+          const result = await transferNft({
+            nftId: nft.id,
+            toWallet: transferToWallet,
+          });
+          if (result.success) {
+            setIsTransferDialogOpen(false);
+            setTransferToWallet("");
+            router.push("/nfts");
+          }
         }}
       >
-        <div className="mt-3">
-          <label htmlFor="transfer-to-wallet" className="text-jungle-600 mb-1 block text-sm">
-            Recipient Wallet Address
-          </label>
-          <input
-            id="transfer-to-wallet"
-            type="text"
-            placeholder="0x..."
-            value={transferToWallet}
-            onChange={(e) => setTransferToWallet(e.target.value)}
-            className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 font-mono text-sm focus:ring-2 focus:outline-none"
-          />
+        <div className="mt-3 space-y-3">
+          <div>
+            <label htmlFor="transfer-to-wallet" className="text-jungle-600 mb-1 block text-sm">
+              Recipient Wallet Address
+            </label>
+            <input
+              id="transfer-to-wallet"
+              type="text"
+              placeholder="0x..."
+              value={transferToWallet}
+              onChange={(e) => setTransferToWallet(e.target.value)}
+              className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 font-mono text-sm focus:ring-2 focus:outline-none"
+            />
+          </div>
+          {transferNftError && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {transferNftError}
+            </div>
+          )}
         </div>
       </ActionModal>
     </div>
