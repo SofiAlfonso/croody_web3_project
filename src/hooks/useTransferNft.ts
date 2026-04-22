@@ -109,7 +109,7 @@ export function useTransferNft() {
           address: marketplaceAddress,
           abi: MARKETPLACE_ABI,
           functionName: "getAllActiveAuctions",
-        })) as AuctionView[];
+        })) as unknown as AuctionView[];
 
         const isInAuction = activeAuctions.some(
           (a) =>
