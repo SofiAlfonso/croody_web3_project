@@ -17,7 +17,7 @@ vi.mock("../../../hooks/useAuctions", () => ({
 }));
 vi.mock("../../../hooks/useWalletBalance", () => ({ useWalletBalance: vi.fn() }));
 vi.mock("next/image", () => ({
-  default: ({ fill: _fill, ...props }: { [key: string]: unknown }) => <img {...props} alt={props.alt} />,
+  default: ({ fill: _fill, ...props }: any) => <img {...props} alt={props.alt} />,
 }));
 vi.mock("../../../components/shared/AppHeader", () => ({
   default: ({ children, title }: { children: ReactNode; title: string }) => (
