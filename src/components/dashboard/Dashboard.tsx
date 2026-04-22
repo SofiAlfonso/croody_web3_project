@@ -219,7 +219,7 @@ export default function Dashboard() {
                       ) : (
                         <Link
                           href={`/auction/${auction.id}`}
-                          className="border-jungle-100 text-jungle-700 block w-full rounded-lg border px-3 py-2 text-center text-sm hover:bg-neutral-50"
+                          className="border-jungle-100 text-jungle-500 font-medium block w-full rounded-lg border px-3 py-2 text-center text-sm hover:bg-neutral-50"
                         >
                           View Auction
                         </Link>
@@ -276,7 +276,7 @@ export default function Dashboard() {
                     </div>
                     <Link
                       href={`/auction/${auction.id}`}
-                      className="bg-gator-500 hover:bg-gator-700 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm text-white transition-colors"
+                      className="bg-gator-700 hover:opacity-90 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors"
                     >
                       View Auction
                       <ArrowUpRight className="h-4 w-4" />

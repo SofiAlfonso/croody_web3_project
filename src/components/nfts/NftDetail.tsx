@@ -113,11 +113,11 @@ export default function NftDetail({ id }: NftDetailProps) {
                   <TrendingUp className="text-gator-700 h-5 w-5" />
                 </div>
                 <div>
-                  <div className="text-jungle-400 text-xs">Floor Price</div>
+                  <div className="text-jungle-500 font-medium text-xs">Floor Price</div>
                   <div className="text-jungle-900 text-xl font-bold">{nft.floorPrice} CRD</div>
                 </div>
               </div>
-              <div className="text-jungle-400 bg-jungle-50 rounded-full px-3 py-1.5 text-xs">
+              <div className="text-jungle-500 font-medium bg-jungle-50 rounded-full px-3 py-1.5 text-xs">
                 Collection floor
               </div>
             </div>
@@ -131,11 +131,11 @@ export default function NftDetail({ id }: NftDetailProps) {
             <div className="mb-4 flex items-start justify-between gap-4">
               <div>
                 <div className="text-jungle-900 mb-1 text-3xl font-bold">{nft.name}</div>
-                <div className="text-jungle-400 font-mono text-sm">Token ID: #{nft.id}</div>
+                <div className="text-jungle-500 font-medium font-mono text-sm">Token ID: #{nft.id}</div>
               </div>
               <button
                 type="button"
-                className="text-jungle-400 hover:text-gator-600 shrink-0 transition-colors"
+                className="text-jungle-500 font-medium hover:text-gator-600 shrink-0 transition-colors"
                 title="View on block explorer (coming soon)"
                 disabled
               >
@@ -151,7 +151,7 @@ export default function NftDetail({ id }: NftDetailProps) {
             )}
 
             {nft.description && (
-              <p className="text-jungle-500 text-sm leading-relaxed">{nft.description}</p>
+              <p className="text-jungle-500 font-medium text-sm leading-relaxed">{nft.description}</p>
             )}
           </div>
 
@@ -161,7 +161,7 @@ export default function NftDetail({ id }: NftDetailProps) {
               <div className="mb-4 flex items-center gap-2">
                 <Tag className="text-jungle-500 h-4 w-4" />
                 <span className="text-jungle-900 text-sm font-semibold">Traits</span>
-                <span className="text-jungle-400 ml-auto text-xs">
+                <span className="text-jungle-500 font-medium ml-auto text-xs">
                   {nft.traits.length} attributes
                 </span>
               </div>
@@ -171,7 +171,7 @@ export default function NftDetail({ id }: NftDetailProps) {
                     key={`${trait.type}-${trait.value}`}
                     className="border-jungle-100 bg-jungle-50/50 rounded-xl border p-3"
                   >
-                    <div className="text-jungle-400 mb-1 text-xs tracking-wide uppercase">
+                    <div className="text-jungle-500 font-medium mb-1 text-xs tracking-wide uppercase">
                       {trait.type}
                     </div>
                     <div className="text-jungle-900 text-sm font-semibold">{trait.value}</div>
@@ -199,7 +199,7 @@ export default function NftDetail({ id }: NftDetailProps) {
               Put NFT in Auction
             </button>
             <button
-              className="border-jungle-200 text-jungle-700 hover:bg-jungle-50 w-full rounded-xl border px-5 py-3 text-sm transition-colors"
+              className="border-jungle-100 text-jungle-500 font-medium hover:bg-neutral-50 w-full rounded-xl border px-5 py-3 text-sm transition-colors"
               type="button"
               onClick={() => setIsTransferDialogOpen(true)}
             >
@@ -236,7 +236,7 @@ export default function NftDetail({ id }: NftDetailProps) {
       >
         <div className="mt-3 space-y-4">
           <div>
-            <label htmlFor="auction-min-bid" className="text-jungle-500 mb-1 block text-sm">
+            <label htmlFor="auction-min-bid" className="text-jungle-500 font-medium mb-1 block text-sm">
               Minimum Bid (CRD)
             </label>
             <input
@@ -245,11 +245,11 @@ export default function NftDetail({ id }: NftDetailProps) {
               min="1"
               value={auctionMinBid}
               onChange={(e) => setAuctionMinBid(e.target.value)}
-              className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+              className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 text-sm text-neutral-900 focus:ring-2 focus:outline-none"
             />
           </div>
           <div>
-            <label htmlFor="auction-duration" className="text-jungle-500 mb-1 block text-sm">
+            <label htmlFor="auction-duration" className="text-jungle-500 font-medium mb-1 block text-sm">
               Duration (Hours)
             </label>
             <input
@@ -258,7 +258,7 @@ export default function NftDetail({ id }: NftDetailProps) {
               min="1"
               value={auctionDuration}
               onChange={(e) => setAuctionDuration(e.target.value)}
-              className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+              className="border-jungle-100 focus:ring-gator-300 w-full rounded-lg border px-3 py-2 text-sm text-neutral-900 focus:ring-2 focus:outline-none"
             />
           </div>
         </div>
@@ -290,7 +290,7 @@ export default function NftDetail({ id }: NftDetailProps) {
       >
         <div className="mt-3 space-y-3">
           <div>
-            <label htmlFor="transfer-to-wallet" className="text-jungle-500 mb-1 block text-sm">
+            <label htmlFor="transfer-to-wallet" className="text-jungle-500 font-medium mb-1 block text-sm">
               Recipient Wallet Address
             </label>
             <input

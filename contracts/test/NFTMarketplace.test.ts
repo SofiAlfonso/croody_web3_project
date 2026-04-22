@@ -474,4 +474,71 @@ describe("NFTMarketplace", function () {
       expect(auction.cancelled).to.be.true;
     });
   });
+
+  describe("getAllActiveAuctions / getLastAuctionId", function () {
+    it("Returns empty array when no auctions exist", async function () {
+      const { marketplace } = await deployMarketplaceFixture();
+      const auctions = await marketplace.getAllActiveAuctions();
+      expect(auctions.length).to.equal(0);
+    });
+
+    it("Returns active auction with correct data", async function () {
+      const { nft, marketplace, seller } = await deployMarketplaceFixture();
+      const nftAddr = await nft.getAddress();
+      const mktAddr = await marketplace.getAddress();
+
+      await nft.connect(seller).approve(mktAddr, 1);
+      await marketplace.connect(seller).createAuction(nftAddr, 1, START_PRICE, ONE_DAY);
+
+      const auctions = await marketplace.getAllActiveAuctions();
+      expect(auctions.length).to.equal(1);
+      expect(auctions[0].auctionId).to.equal(1);
+      expect(auctions[0].seller).to.equal(seller.address);
+      expect(auctions[0].startPrice).to.equal(START_PRICE);
+    });
+
+    it("Excludes ended auctions from results", async function () {
+      const { nft, marketplace, seller } = await deployMarketplaceFixture();
+      const nftAddr = await nft.getAddress();
+      const mktAddr = await marketplace.getAddress();
+
+      await nft.connect(seller).approve(mktAddr, 1);
+      await marketplace.connect(seller).createAuction(nftAddr, 1, START_PRICE, ONE_DAY);
+
+      await time.increase(ONE_DAY + 1);
+      await marketplace.endAuction(1);
+
+      const auctions = await marketplace.getAllActiveAuctions();
+      expect(auctions.length).to.equal(0);
+    });
+
+    it("Excludes cancelled auctions from results", async function () {
+      const { nft, marketplace, seller } = await deployMarketplaceFixture();
+      const nftAddr = await nft.getAddress();
+      const mktAddr = await marketplace.getAddress();
+
+      await nft.connect(seller).approve(mktAddr, 1);
+      await marketplace.connect(seller).createAuction(nftAddr, 1, START_PRICE, ONE_DAY);
+      await marketplace.connect(seller).cancelAuction(1);
+
+      const auctions = await marketplace.getAllActiveAuctions();
+      expect(auctions.length).to.equal(0);
+    });
+
+    it("getLastAuctionId returns 0 before any auction", async function () {
+      const { marketplace } = await deployMarketplaceFixture();
+      expect(await marketplace.getLastAuctionId()).to.equal(0);
+    });
+
+    it("getLastAuctionId increments after creating auctions", async function () {
+      const { nft, marketplace, seller } = await deployMarketplaceFixture();
+      const nftAddr = await nft.getAddress();
+      const mktAddr = await marketplace.getAddress();
+
+      await nft.connect(seller).approve(mktAddr, 1);
+      await marketplace.connect(seller).createAuction(nftAddr, 1, START_PRICE, ONE_DAY);
+
+      expect(await marketplace.getLastAuctionId()).to.equal(1);
+    });
+  });
 });

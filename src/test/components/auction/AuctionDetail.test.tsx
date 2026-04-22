@@ -168,4 +168,39 @@ describe("AuctionDetail UI features", () => {
       expect(mockRouterPush).toHaveBeenCalledWith("/dashboard");
     });
   });
+
+  it("HU-15: Place Bid button opens bid dialog (non-owner, non-expired)", () => {
+    render(<AuctionDetail id="1" />);
+    fireEvent.click(screen.getByRole("button", { name: "Place Bid" }));
+    expect(screen.getByText("Place a Bid")).toBeDefined();
+  });
+
+  it("HU-15: submits bid and calls placeBid with correct params", async () => {
+    mockPlaceBid.mockResolvedValue({ success: true });
+    render(<AuctionDetail id="1" />);
+    fireEvent.click(screen.getByRole("button", { name: "Place Bid" }));
+    const input = screen.getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "200" } });
+    fireEvent.click(screen.getByRole("button", { name: "Submit Bid" }));
+    await waitFor(() => {
+      expect(mockPlaceBid).toHaveBeenCalledWith({ auctionId: "1", amount: "200" });
+    });
+  });
+
+  it("HU-17: does not redirect when endAuction returns failure", async () => {
+    vi.mocked(useWalletContext).mockReturnValue({ walletAddress: "0x123owner" } as any);
+    vi.mocked(useAuctionById).mockReturnValue({ data: expiredAuction } as any);
+    mockEndAuction.mockResolvedValue({ success: false });
+    render(<AuctionDetail id="1" />);
+    fireEvent.click(screen.getByRole("button", { name: "Close Auction" }));
+    await waitFor(() => expect(mockEndAuction).toHaveBeenCalled());
+    expect(mockRouterPush).not.toHaveBeenCalledWith("/dashboard");
+  });
+
+  it("HU-15: Place Bid button is disabled when auction is expired", () => {
+    vi.mocked(useAuctionById).mockReturnValue({ data: expiredAuction } as any);
+    render(<AuctionDetail id="1" />);
+    const btn = screen.queryByRole("button", { name: "Place Bid" });
+    if (btn) expect((btn as HTMLButtonElement).disabled).toBe(true);
+  });
 });

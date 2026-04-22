@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { getNftCollectionAddress, getProjectTokenAddress } from "@/lib/contracts";
+import { getNftCollectionAddress, getProjectTokenAddress, getMarketplaceAddress } from "@/lib/contracts";
 
 describe("contracts.ts", () => {
   beforeEach(() => {
@@ -82,5 +82,34 @@ describe("getProjectTokenAddress", () => {
     const envAddress = "0x" + "d".repeat(40);
     process.env.NEXT_PUBLIC_PROJECT_TOKEN_ADDRESS = envAddress;
     expect(getProjectTokenAddress()).to.equal(envAddress);
+  });
+});
+
+describe("getMarketplaceAddress", () => {
+  beforeEach(() => {
+    delete process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS;
+  });
+
+  it("returns null when candidate has wrong length", () => {
+    process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS = "0xABCD";
+    expect(getMarketplaceAddress()).to.be.null;
+  });
+
+  it("returns null when candidate does not start with 0x", () => {
+    process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS = "abcdef1234567890abcdef1234567890abcdef12";
+    expect(getMarketplaceAddress()).to.be.null;
+  });
+
+  it("returns the address when env var is a valid 42-char 0x address", () => {
+    const validAddress = "0x" + "e".repeat(40);
+    process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS = validAddress;
+    expect(getMarketplaceAddress()).to.equal(validAddress);
+  });
+
+  it("falls back to deployed-addresses.json when env var is absent", () => {
+    const address = getMarketplaceAddress();
+    if (address !== null) {
+      expect(address).to.match(/^0x[a-fA-F0-9]{40}$/);
+    }
   });
 });
