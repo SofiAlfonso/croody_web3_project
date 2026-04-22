@@ -1,6 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
+import type {
+  NFTCollection,
+  ProjectToken,
+  NFTMarketplace as NFTMarketplaceContract,
+} from "../typechain-types";
 
 describe("NFTMarketplace", function () {
   const TOKEN_URI = "ipfs://QmTestNFT";
@@ -14,16 +19,16 @@ describe("NFTMarketplace", function () {
     const [owner, seller, bidderA, bidderB] = await ethers.getSigners();
 
     // Deploy ProjectToken
-    const ProjectToken = await ethers.getContractFactory("ProjectToken");
-    const token = await ProjectToken.deploy();
+    const TokenFactory = await ethers.getContractFactory("ProjectToken");
+    const token = (await TokenFactory.deploy()) as unknown as ProjectToken;
 
     // Deploy NFTCollection
-    const NFTCollection = await ethers.getContractFactory("NFTCollection");
-    const nft = await NFTCollection.deploy(owner.address);
+    const NFTCollectionFactory = await ethers.getContractFactory("NFTCollection");
+    const nft = (await NFTCollectionFactory.deploy(owner.address)) as unknown as NFTCollection;
 
     // Deploy NFTMarketplace
-    const NFTMarketplace = await ethers.getContractFactory("NFTMarketplace");
-    const marketplace = await NFTMarketplace.deploy(await token.getAddress());
+    const NFTMarketplaceFactory = await ethers.getContractFactory("NFTMarketplace");
+    const marketplace = (await NFTMarketplaceFactory.deploy(await token.getAddress())) as unknown as NFTMarketplaceContract;
 
     // Distribute tokens to bidders for testing
     await token.distribute(bidderA.address, DISTRIBUTE_AMOUNT);

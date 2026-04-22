@@ -63,7 +63,7 @@ describe("useMyNfts", () => {
 
     const { result } = renderHook(() => useMyNfts(REAL_ADDRESS), { wrapper });
     await waitFor(() => expect(result.current.isLoading).to.be.false);
-    expect(result.current.data).to.have.length(1);
+    expect(result.current.data.length).to.equal(1);
     expect(result.current.data[0].id).to.equal("5");
   });
 
