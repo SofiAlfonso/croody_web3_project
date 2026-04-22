@@ -105,6 +105,18 @@ describe("useCreateAuction", () => {
     expect(result.current.error).to.equal("Not NFT owner");
   });
 
+  it("HU-12: returns error when createAuction tx fails after approve succeeds", async () => {
+    mockWriteContractAsync.mockReset();
+    mockWriteContractAsync
+      .mockResolvedValueOnce("0xapprove-hash")
+      .mockRejectedValueOnce(new Error("Auction creation failed"));
+    const { result } = renderHook(() => useCreateAuction());
+    let res: Awaited<ReturnType<typeof result.current.createAuction>>;
+    await act(async () => { res = await result.current.createAuction(VALID_PARAMS); });
+    expect(res!.success).to.be.false;
+    expect(result.current.error).to.equal("Auction creation failed");
+  });
+
   it("uses fallback message when rejection is not an Error instance", async () => {
     mockWriteContractAsync.mockReset();
     mockWriteContractAsync.mockRejectedValue("unknown");
@@ -113,5 +125,17 @@ describe("useCreateAuction", () => {
     await act(async () => { res = await result.current.createAuction(VALID_PARAMS); });
     expect(res!.success).to.be.false;
     expect(result.current.error).to.equal("Failed to create auction");
+  });
+
+  it("isPending is true while creating and false after", async () => {
+    let resolveTx!: () => void;
+    mockWriteContractAsync
+      .mockResolvedValueOnce("0xapprove-hash")
+      .mockReturnValueOnce(new Promise((r) => { resolveTx = () => r("0xcreate-hash"); }));
+    const { result } = renderHook(() => useCreateAuction());
+    act(() => { result.current.createAuction(VALID_PARAMS); });
+    expect(result.current.isPending).to.be.true;
+    await act(async () => { resolveTx(); });
+    expect(result.current.isPending).to.be.false;
   });
 });

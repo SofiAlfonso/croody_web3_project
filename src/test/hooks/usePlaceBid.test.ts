@@ -75,6 +75,18 @@ describe("usePlaceBid", () => {
     expect(result.current.error).to.include("Public client not available");
   });
 
+  it("HU-15: returns error when placeBid tx fails after approve succeeds", async () => {
+    mockWriteContractAsync.mockReset();
+    mockWriteContractAsync
+      .mockResolvedValueOnce("0xapprove-hash")
+      .mockRejectedValueOnce(new Error("Bid too low"));
+    const { result } = renderHook(() => usePlaceBid());
+    let res: Awaited<ReturnType<typeof result.current.placeBid>>;
+    await act(async () => { res = await result.current.placeBid({ auctionId: "1", amount: "100" }); });
+    expect(res!.success).to.be.false;
+    expect(result.current.error).to.equal("Bid too low");
+  });
+
   it("returns error when approve fails", async () => {
     mockWriteContractAsync.mockReset();
     mockWriteContractAsync.mockRejectedValue(new Error("Insufficient balance"));

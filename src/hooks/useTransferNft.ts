@@ -2,10 +2,15 @@
 
 import { useState } from "react";
 import { useWriteContract, useSwitchChain } from "wagmi";
-import { isAddress } from "viem";
-import { hardhat } from "wagmi/chains";
+import { isAddress, createPublicClient, http } from "viem";
+import { hardhat } from "viem/chains";
 import { useWalletContext } from "@/context/WalletContext";
-import { getNftCollectionAddress } from "@/lib/contracts";
+import { getNftCollectionAddress, getMarketplaceAddress } from "@/lib/contracts";
+
+const publicClient = createPublicClient({
+  chain: hardhat,
+  transport: http(process.env.NEXT_PUBLIC_RPC_URL ?? "http://127.0.0.1:8545"),
+});
 
 const NFT_ABI = [
   {
@@ -20,6 +25,37 @@ const NFT_ABI = [
     outputs: [],
   },
 ] as const;
+
+const MARKETPLACE_ABI = [
+  {
+    name: "getAllActiveAuctions",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      {
+        type: "tuple[]",
+        components: [
+          { name: "auctionId", type: "uint256" },
+          { name: "seller", type: "address" },
+          { name: "nftContract", type: "address" },
+          { name: "tokenId", type: "uint256" },
+          { name: "startPrice", type: "uint256" },
+          { name: "highestBid", type: "uint256" },
+          { name: "highestBidder", type: "address" },
+          { name: "endTime", type: "uint256" },
+          { name: "ended", type: "bool" },
+          { name: "cancelled", type: "bool" },
+        ],
+      },
+    ],
+  },
+] as const;
+
+type AuctionView = {
+  nftContract: `0x${string}`;
+  tokenId: bigint;
+};
 
 type TransferNftParams = {
   nftId: string;
@@ -65,6 +101,27 @@ export function useTransferNft() {
         const msg = "NFT contract address not configured";
         setError(msg);
         return { success: false, error: msg };
+      }
+
+      const marketplaceAddress = getMarketplaceAddress();
+      if (marketplaceAddress) {
+        const activeAuctions = (await publicClient.readContract({
+          address: marketplaceAddress,
+          abi: MARKETPLACE_ABI,
+          functionName: "getAllActiveAuctions",
+        })) as AuctionView[];
+
+        const isInAuction = activeAuctions.some(
+          (a) =>
+            a.nftContract.toLowerCase() === nftAddress.toLowerCase() &&
+            a.tokenId.toString() === nftId,
+        );
+
+        if (isInAuction) {
+          const msg = "This NFT is in an active auction and cannot be transferred";
+          setError(msg);
+          return { success: false, error: msg };
+        }
       }
 
       await switchChainAsync({ chainId: hardhat.id });

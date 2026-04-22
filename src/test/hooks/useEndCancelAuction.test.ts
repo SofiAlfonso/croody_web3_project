@@ -85,6 +85,16 @@ describe("useEndAuction", () => {
     expect(res!.success).to.be.false;
     expect(result.current.error).to.equal("Failed to close auction");
   });
+
+  it("isPending is true while ending and false after", async () => {
+    let resolveTx!: () => void;
+    mockWriteContractAsync.mockReturnValue(new Promise((r) => { resolveTx = () => r("0xhash"); }));
+    const { result } = renderHook(() => useEndAuction());
+    act(() => { result.current.endAuction({ auctionId: "1" }); });
+    expect(result.current.isPending).to.be.true;
+    await act(async () => { resolveTx(); });
+    expect(result.current.isPending).to.be.false;
+  });
 });
 
 describe("useCancelAuction", () => {
