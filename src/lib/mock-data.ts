@@ -36,7 +36,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "001",
     name: "Croody Ape #001",
-    image: "https://picsum.photos/seed/croody1/600/600",
+    image: "https://media.giphy.com/media/26AHONQ79FdWZhAI0/giphy.gif",
     ownerAddress: DEMO_ADDRESS,
     collection: "Croody Genesis",
     description:
@@ -53,7 +53,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "002",
     name: "Croody Ape #002",
-    image: "https://picsum.photos/seed/croody2/600/600",
+    image: "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dmZlMms1MXZibWlsMTNjbDJvenBlZ25jMnlqYTNnM2Z4YzV1MHlldyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xT77Y1T0zY1gR5qe5O/giphy.gif",
     ownerAddress: DEMO_ADDRESS,
     collection: "Croody Genesis",
     description: "A rare Croody Genesis ape with distinctive features from the founding batch.",
@@ -69,7 +69,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "003",
     name: "Croody Ape #003",
-    image: "https://picsum.photos/seed/croody3/600/600",
+    image: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHE5OXJ3d29qejI2bDJwcWJhZWRoYmlhMzhlZnppNnUzeW5kdzF6dSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3oxRmgZTLdUMKAef72/giphy.gif",
     ownerAddress: DEMO_ADDRESS,
     collection: "Croody Genesis",
     description:
@@ -86,7 +86,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "004",
     name: "Croody Ape #004",
-    image: "https://picsum.photos/seed/croody4/600/600",
+    image: "https://media.giphy.com/media/xT9IgzoZoKBvdHDASQ/giphy.gif",
     ownerAddress: SAMPLE_OWNER_A,
     collection: "Croody Genesis",
     description:
@@ -103,7 +103,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "005",
     name: "Croody Ape #005",
-    image: "https://picsum.photos/seed/croody5/600/600",
+    image: "https://media.giphy.com/media/xT0xezQGU5xCDJuCPe/giphy.gif",
     ownerAddress: SAMPLE_OWNER_A,
     collection: "Croody Genesis",
     description: "The fifth Genesis ape — a symbol of resilience in the Croody ecosystem.",
@@ -119,7 +119,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "006",
     name: "Croody Ape #006",
-    image: "https://picsum.photos/seed/croody6/600/600",
+    image: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif",
     ownerAddress: SAMPLE_OWNER_B,
     collection: "Croody Genesis",
     description: "Born from the sixth mint of the Genesis collection. Rare and coveted.",
@@ -135,7 +135,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "007",
     name: "Neon Relic #001",
-    image: "https://picsum.photos/seed/croody7/600/600",
+    image: "https://media.giphy.com/media/26tn33aiTi1jIGsF2/giphy.gif",
     ownerAddress: SAMPLE_OWNER_B,
     collection: "Neon Relics",
     description:
@@ -151,7 +151,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "008",
     name: "Neon Relic #002",
-    image: "https://picsum.photos/seed/croody8/600/600",
+    image: "https://media.giphy.com/media/l0HlNaQ6gWfllcjDO/giphy.gif",
     ownerAddress: SAMPLE_OWNER_B,
     collection: "Neon Relics",
     description: "The second Neon Relic — pulsing with raw blockchain energy.",
@@ -166,7 +166,7 @@ export const mockNFTs: NFT[] = [
   {
     id: "009",
     name: "Pixel Degen #001",
-    image: "https://picsum.photos/seed/croody9/600/600",
+    image: "https://media.giphy.com/media/3o85xoi6nNqJQJ95Qc/giphy.gif",
     ownerAddress: DEMO_ADDRESS,
     collection: "Pixel Degens",
     description:
@@ -185,7 +185,7 @@ export const mockAuctions: Auction[] = [
   {
     id: "a1",
     name: "Genesis Relic",
-    image: "https://picsum.photos/seed/auction1/600/600",
+    image: "https://media.giphy.com/media/3o7TKsMZE0tqQ2K6uI/giphy.gif",
     currentBid: 120,
     startPrice: 100,
     timeLeft: "2h 14m",
@@ -197,7 +197,7 @@ export const mockAuctions: Auction[] = [
   {
     id: "a2",
     name: "Pixel Dragon",
-    image: "https://picsum.photos/seed/auction2/600/600",
+    image: "https://media.giphy.com/media/26ufmyA3XFmQy6wfu/giphy.gif",
     currentBid: 78,
     startPrice: 50,
     timeLeft: "5h 03m",
@@ -209,7 +209,7 @@ export const mockAuctions: Auction[] = [
   {
     id: "a3",
     name: "Neon Artifact",
-    image: "https://picsum.photos/seed/auction3/600/600",
+    image: "https://media.giphy.com/media/xT1XH0yLcyVmzs26eQ/giphy.gif",
     currentBid: 220,
     startPrice: 200,
     timeLeft: "1d 02h",

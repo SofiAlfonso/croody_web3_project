@@ -121,21 +121,19 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
                   <div className="rounded-lg bg-neutral-100 px-5 py-3 text-center text-sm text-neutral-500">
                     You are the seller — wait for the auction to expire to close it
                   </div>
-                  {!auction.highestBidder && (
-                    <button
-                      className="w-full rounded-lg border border-red-200 px-5 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-                      type="button"
-                      disabled={isCancelling}
-                      onClick={async () => {
-                        const result = await cancelAuction({ auctionId: auction.id });
-                        if (result.success) {
-                          router.push("/dashboard");
-                        }
-                      }}
-                    >
-                      {isCancelling ? "Cancelling..." : "Cancel Auction"}
-                    </button>
-                  )}
+                  <button
+                    className="w-full rounded-lg border border-red-200 px-5 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                    type="button"
+                    disabled={isCancelling}
+                    onClick={async () => {
+                      const result = await cancelAuction({ auctionId: auction.id });
+                      if (result.success) {
+                        router.push("/dashboard");
+                      }
+                    }}
+                  >
+                    {isCancelling ? "Cancelling..." : "Cancel Auction"}
+                  </button>
                 </>
               ) : (
                 <button
