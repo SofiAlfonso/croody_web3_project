@@ -7,6 +7,7 @@ import { Clock, User, Tag } from "lucide-react";
 import { useWalletContext } from "@/context/WalletContext";
 import { useAuctionById } from "@/hooks/useAuctions";
 import { useEndAuction } from "@/hooks/useEndAuction";
+import { useCancelAuction } from "@/hooks/useCancelAuction";
 import { usePlaceBid } from "@/hooks/usePlaceBid";
 import AppHeader from "@/components/shared/AppHeader";
 import WalletBadge from "@/components/shared/WalletBadge";
@@ -30,6 +31,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
   const { data: auction } = useAuctionById(id);
   const { placeBid, isPending: isPlacingBid } = usePlaceBid();
   const { endAuction, isPending: isEndingAuction } = useEndAuction();
+  const { cancelAuction, isPending: isCancelling } = useCancelAuction();
 
   if (!auction) {
     return (
@@ -115,9 +117,26 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
                   {isEndingAuction ? "Closing Auction..." : "Close Auction"}
                 </button>
               ) : isOwner ? (
-                <div className="rounded-lg bg-neutral-100 px-5 py-3 text-center text-sm text-neutral-500">
-                  You are the seller — wait for the auction to expire to close it
-                </div>
+                <>
+                  <div className="rounded-lg bg-neutral-100 px-5 py-3 text-center text-sm text-neutral-500">
+                    You are the seller — wait for the auction to expire to close it
+                  </div>
+                  {!auction.highestBidder && (
+                    <button
+                      className="w-full rounded-lg border border-red-200 px-5 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                      type="button"
+                      disabled={isCancelling}
+                      onClick={async () => {
+                        const result = await cancelAuction({ auctionId: auction.id });
+                        if (result.success) {
+                          router.push("/dashboard");
+                        }
+                      }}
+                    >
+                      {isCancelling ? "Cancelling..." : "Cancel Auction"}
+                    </button>
+                  )}
+                </>
               ) : (
                 <button
                   className="bg-gator-100 text-gator-700 hover:bg-gator-300 w-full rounded-lg px-5 py-3 text-center text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60"

@@ -4,6 +4,7 @@ import AuctionDetail from "../../../components/auction/AuctionDetail";
 import { useWalletContext } from "../../../context/WalletContext";
 import { useAuctionById } from "../../../hooks/useAuctions";
 import { useEndAuction } from "../../../hooks/useEndAuction";
+import { useCancelAuction } from "../../../hooks/useCancelAuction";
 import { usePlaceBid } from "../../../hooks/usePlaceBid";
 import { useRouter } from "next/navigation";
 
@@ -30,6 +31,10 @@ vi.mock("../../../hooks/useEndAuction", () => ({
   useEndAuction: vi.fn(),
 }));
 
+vi.mock("../../../hooks/useCancelAuction", () => ({
+  useCancelAuction: vi.fn(),
+}));
+
 vi.mock("../../../hooks/usePlaceBid", () => ({
   usePlaceBid: vi.fn(),
 }));
@@ -49,6 +54,7 @@ describe("AuctionDetail UI features", () => {
   const mockRouterPush = vi.fn();
   const mockPlaceBid = vi.fn();
   const mockEndAuction = vi.fn();
+  const mockCancelAuction = vi.fn();
 
   const futureEndTime = Math.floor(Date.now() / 1000) + 7200;
   const pastEndTime = Math.floor(Date.now() / 1000) - 1;
@@ -88,6 +94,11 @@ describe("AuctionDetail UI features", () => {
 
     vi.mocked(useEndAuction).mockReturnValue({
       endAuction: mockEndAuction,
+      isPending: false,
+    } as any);
+
+    vi.mocked(useCancelAuction).mockReturnValue({
+      cancelAuction: mockCancelAuction,
       isPending: false,
     } as any);
   });
