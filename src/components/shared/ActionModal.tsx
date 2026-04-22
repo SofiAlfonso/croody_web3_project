@@ -29,7 +29,7 @@ export default function ActionModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
         <div className="text-lg font-semibold text-neutral-900">{title}</div>
-        <div className="mt-1 text-sm text-neutral-500">{description}</div>
+        <div className="mt-1 text-sm font-medium text-neutral-700">{description}</div>
         {children}
         <div className="mt-6 flex gap-3">
           <button
@@ -40,7 +40,7 @@ export default function ActionModal({
             {cancelLabel}
           </button>
           <button
-            className="bg-gator-500 hover:bg-gator-700 flex-1 rounded-lg px-4 py-2 text-sm text-white"
+            className="bg-gator-700 hover:opacity-90 flex-1 rounded-lg px-4 py-2 text-sm font-medium text-white"
             type="button"
             disabled={isConfirming}
             onClick={onConfirm}

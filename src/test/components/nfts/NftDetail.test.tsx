@@ -145,8 +145,82 @@ describe("NftDetail Component - Auction Creation features", () => {
     fireEvent.click(screen.getByRole("button", { name: "Create Auction" }));
     
     await waitFor(() => {
-      // Should fallback to dashboard
       expect(mockRouterPush).toHaveBeenCalledWith("/dashboard");
     });
+  });
+});
+
+describe("NftDetail Component - NFT data rendering", () => {
+  const mockRouterPush = vi.fn();
+
+  const fullNft = {
+    id: "1",
+    name: "Full NFT",
+    image: "/full.png",
+    description: "A full NFT with all fields",
+    collection: "Croody Genesis",
+    floorPrice: 250,
+    traits: [
+      { type: "Background", value: "Blue", rarity: "2" },   // ≤3 → yellow
+      { type: "Eyes", value: "Laser", rarity: "5" },         // ≤7 → purple
+      { type: "Hat", value: "Cap", rarity: "10" },           // ≤12 → gator
+      { type: "Mouth", value: "Smile", rarity: "50" },       // default
+      { type: "Body", value: "Suit" },                       // no rarity
+    ],
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.mocked(useRouter).mockReturnValue({ push: mockRouterPush } as any);
+    vi.mocked(useNftById).mockReturnValue({ data: fullNft, isLoading: false } as any);
+    vi.mocked(useCreateAuction).mockReturnValue({ createAuction: vi.fn(), isPending: false } as any);
+    vi.mocked(useTransferNft).mockReturnValue({ transferNft: vi.fn(), isPending: false, error: null } as any);
+  });
+
+  it("renders floor price card", () => {
+    render(<NftDetail id="1" />);
+    expect(screen.getByText("250 CRD")).toBeDefined();
+    expect(screen.getByText("Collection floor")).toBeDefined();
+  });
+
+  it("renders collection name", () => {
+    render(<NftDetail id="1" />);
+    expect(screen.getByText("Croody Genesis")).toBeDefined();
+  });
+
+  it("renders description", () => {
+    render(<NftDetail id="1" />);
+    expect(screen.getByText("A full NFT with all fields")).toBeDefined();
+  });
+
+  it("renders traits with different rarity colors", () => {
+    render(<NftDetail id="1" />);
+    expect(screen.getByText("Background")).toBeDefined();
+    expect(screen.getByText("Blue")).toBeDefined();
+    expect(screen.getByText("5 attributes")).toBeDefined();
+  });
+
+  it("shows transfer error message in modal", async () => {
+    vi.mocked(useTransferNft).mockReturnValue({
+      transferNft: vi.fn().mockResolvedValue({ success: false, error: "NFT is in auction" }),
+      isPending: false,
+      error: "NFT is in auction",
+    } as any);
+    render(<NftDetail id="1" />);
+    fireEvent.click(screen.getByText("Transfer NFT"));
+    await waitFor(() => expect(screen.getByText("NFT is in auction")).toBeDefined());
+  });
+
+  it("closes transfer modal and redirects on success", async () => {
+    const mockTransfer = vi.fn().mockResolvedValue({ success: true, hash: "0xhash" });
+    vi.mocked(useTransferNft).mockReturnValue({
+      transferNft: mockTransfer, isPending: false, error: null,
+    } as any);
+    render(<NftDetail id="1" />);
+    fireEvent.click(screen.getByText("Transfer NFT"));
+    const input = screen.getByPlaceholderText("0x...");
+    fireEvent.change(input, { target: { value: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" } });
+    fireEvent.click(screen.getByRole("button", { name: "Transfer" }));
+    await waitFor(() => expect(mockRouterPush).toHaveBeenCalledWith("/nfts"));
   });
 });

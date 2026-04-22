@@ -1,6 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
+import type {
+  NFTCollection,
+  ProjectToken,
+  NFTMarketplace as NFTMarketplaceContract,
+} from "../typechain-types";
 
 describe("NFTMarketplace", function () {
   const TOKEN_URI = "ipfs://QmTestNFT";
@@ -14,16 +19,16 @@ describe("NFTMarketplace", function () {
     const [owner, seller, bidderA, bidderB] = await ethers.getSigners();
 
     // Deploy ProjectToken
-    const ProjectToken = await ethers.getContractFactory("ProjectToken");
-    const token = await ProjectToken.deploy();
+    const TokenFactory = await ethers.getContractFactory("ProjectToken");
+    const token = (await TokenFactory.deploy()) as unknown as ProjectToken;
 
     // Deploy NFTCollection
-    const NFTCollection = await ethers.getContractFactory("NFTCollection");
-    const nft = await NFTCollection.deploy(owner.address);
+    const NFTCollectionFactory = await ethers.getContractFactory("NFTCollection");
+    const nft = (await NFTCollectionFactory.deploy(owner.address)) as unknown as NFTCollection;
 
     // Deploy NFTMarketplace
-    const NFTMarketplace = await ethers.getContractFactory("NFTMarketplace");
-    const marketplace = await NFTMarketplace.deploy(await token.getAddress());
+    const NFTMarketplaceFactory = await ethers.getContractFactory("NFTMarketplace");
+    const marketplace = (await NFTMarketplaceFactory.deploy(await token.getAddress())) as unknown as NFTMarketplaceContract;
 
     // Distribute tokens to bidders for testing
     await token.distribute(bidderA.address, DISTRIBUTE_AMOUNT);
@@ -467,6 +472,73 @@ describe("NFTMarketplace", function () {
 
       const auction = await marketplace.getAuction(1);
       expect(auction.cancelled).to.be.true;
+    });
+  });
+
+  describe("getAllActiveAuctions / getLastAuctionId", function () {
+    it("Returns empty array when no auctions exist", async function () {
+      const { marketplace } = await deployMarketplaceFixture();
+      const auctions = await marketplace.getAllActiveAuctions();
+      expect(auctions.length).to.equal(0);
+    });
+
+    it("Returns active auction with correct data", async function () {
+      const { nft, marketplace, seller } = await deployMarketplaceFixture();
+      const nftAddr = await nft.getAddress();
+      const mktAddr = await marketplace.getAddress();
+
+      await nft.connect(seller).approve(mktAddr, 1);
+      await marketplace.connect(seller).createAuction(nftAddr, 1, START_PRICE, ONE_DAY);
+
+      const auctions = await marketplace.getAllActiveAuctions();
+      expect(auctions.length).to.equal(1);
+      expect(auctions[0].auctionId).to.equal(1);
+      expect(auctions[0].seller).to.equal(seller.address);
+      expect(auctions[0].startPrice).to.equal(START_PRICE);
+    });
+
+    it("Excludes ended auctions from results", async function () {
+      const { nft, marketplace, seller } = await deployMarketplaceFixture();
+      const nftAddr = await nft.getAddress();
+      const mktAddr = await marketplace.getAddress();
+
+      await nft.connect(seller).approve(mktAddr, 1);
+      await marketplace.connect(seller).createAuction(nftAddr, 1, START_PRICE, ONE_DAY);
+
+      await time.increase(ONE_DAY + 1);
+      await marketplace.endAuction(1);
+
+      const auctions = await marketplace.getAllActiveAuctions();
+      expect(auctions.length).to.equal(0);
+    });
+
+    it("Excludes cancelled auctions from results", async function () {
+      const { nft, marketplace, seller } = await deployMarketplaceFixture();
+      const nftAddr = await nft.getAddress();
+      const mktAddr = await marketplace.getAddress();
+
+      await nft.connect(seller).approve(mktAddr, 1);
+      await marketplace.connect(seller).createAuction(nftAddr, 1, START_PRICE, ONE_DAY);
+      await marketplace.connect(seller).cancelAuction(1);
+
+      const auctions = await marketplace.getAllActiveAuctions();
+      expect(auctions.length).to.equal(0);
+    });
+
+    it("getLastAuctionId returns 0 before any auction", async function () {
+      const { marketplace } = await deployMarketplaceFixture();
+      expect(await marketplace.getLastAuctionId()).to.equal(0);
+    });
+
+    it("getLastAuctionId increments after creating auctions", async function () {
+      const { nft, marketplace, seller } = await deployMarketplaceFixture();
+      const nftAddr = await nft.getAddress();
+      const mktAddr = await marketplace.getAddress();
+
+      await nft.connect(seller).approve(mktAddr, 1);
+      await marketplace.connect(seller).createAuction(nftAddr, 1, START_PRICE, ONE_DAY);
+
+      expect(await marketplace.getLastAuctionId()).to.equal(1);
     });
   });
 });
