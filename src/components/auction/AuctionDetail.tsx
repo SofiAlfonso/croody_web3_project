@@ -27,6 +27,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
   const router = useRouter();
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState("");
+  const [bidError, setBidError] = useState<string | null>(null);
   const { walletAddress } = useWalletContext();
   const { data: auction } = useAuctionById(id);
   const { placeBid, isPending: isPlacingBid } = usePlaceBid();
@@ -52,7 +53,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
   const isOwner =
     Boolean(walletAddress) && walletAddress?.toLowerCase() === auction.ownerAddress.toLowerCase();
   const canEndAuction = isExpired && !auction.status.includes("Ended");
-  const minBid = auction.currentBid > 0 ? auction.currentBid + 1 : auction.startPrice;
+  const minBid = auction.highestBidder ? auction.currentBid + 1 : auction.startPrice;
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -142,6 +143,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
                   disabled={isExpired}
                   onClick={() => {
                     setBidAmount(String(minBid));
+                    setBidError(null);
                     setIsBidDialogOpen(true);
                   }}
                 >
@@ -220,8 +222,17 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
           cancelLabel="Cancel"
           confirmLabel="Submit Bid"
           isConfirming={isPlacingBid}
-          onCancel={() => setIsBidDialogOpen(false)}
+          onCancel={() => {
+            setIsBidDialogOpen(false);
+            setBidError(null);
+          }}
           onConfirm={async () => {
+            const parsed = Number(bidAmount);
+            if (!bidAmount || isNaN(parsed) || parsed < minBid) {
+              setBidError(`Bid must be at least ${minBid} CRD`);
+              return;
+            }
+            setBidError(null);
             const result = await placeBid({
               auctionId: auction.id,
               amount: bidAmount,
@@ -241,10 +252,16 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
               min={minBid}
               step="1"
               value={bidAmount}
-              onChange={(e) => setBidAmount(e.target.value)}
-              className="w-full rounded-lg border border-neutral-200 px-4 py-2 text-sm outline-none focus:border-neutral-400"
+              onChange={(e) => {
+                setBidAmount(e.target.value);
+                setBidError(null);
+              }}
+              className={`w-full rounded-lg border px-4 py-2 text-sm outline-none focus:border-neutral-400 ${bidError ? "border-red-400" : "border-neutral-200"}`}
               placeholder={`Min ${minBid} CRD`}
             />
+            {bidError && (
+              <p className="mt-1 text-xs text-red-500">{bidError}</p>
+            )}
           </div>
         </ActionModal>
       )}
