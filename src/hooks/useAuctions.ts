@@ -123,8 +123,11 @@ function toUiAuction(rawInput: ActiveAuctionRaw | readonly unknown[] | unknown):
     name: mockItem?.name || `Croody NFT #${tokenId}`,
     image: mockItem?.image || `https://picsum.photos/seed/auction-${tokenId}/600/600`,
     currentBid: Number(formatUnits(currentBidRaw, 18)),
+    startPrice: Number(formatUnits(raw.startPrice, 18)),
     timeLeft: formatTimeLeft(raw.endTime),
+    endTime: Number(raw.endTime),
     ownerAddress: raw.seller,
+    highestBidder: raw.highestBidder !== ZERO_ADDRESS ? raw.highestBidder : null,
     status: raw.ended ? "Ended" : "Live",
   };
 }

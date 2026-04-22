@@ -24,8 +24,11 @@ export type Auction = {
   name: string;
   image: string;
   currentBid: number;
+  startPrice: number;
   timeLeft: string;
+  endTime: number;
   ownerAddress: string;
+  highestBidder: string | null;
   status: "Live" | "Ended";
 };
 
@@ -184,8 +187,11 @@ export const mockAuctions: Auction[] = [
     name: "Genesis Relic",
     image: "https://picsum.photos/seed/auction1/600/600",
     currentBid: 120,
+    startPrice: 100,
     timeLeft: "2h 14m",
+    endTime: Math.floor(Date.now() / 1000) + 8040,
     ownerAddress: "0xA3f...92B",
+    highestBidder: null,
     status: "Live",
   },
   {
@@ -193,8 +199,11 @@ export const mockAuctions: Auction[] = [
     name: "Pixel Dragon",
     image: "https://picsum.photos/seed/auction2/600/600",
     currentBid: 78,
+    startPrice: 50,
     timeLeft: "5h 03m",
+    endTime: Math.floor(Date.now() / 1000) + 18180,
     ownerAddress: "0xOwner...D2C",
+    highestBidder: null,
     status: "Live",
   },
   {
@@ -202,8 +211,11 @@ export const mockAuctions: Auction[] = [
     name: "Neon Artifact",
     image: "https://picsum.photos/seed/auction3/600/600",
     currentBid: 220,
+    startPrice: 200,
     timeLeft: "1d 02h",
+    endTime: Math.floor(Date.now() / 1000) + 93600,
     ownerAddress: "0xZ99...B11",
+    highestBidder: null,
     status: "Live",
   },
 ];

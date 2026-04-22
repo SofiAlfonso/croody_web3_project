@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch"
+      "WebSearch",
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(pdftotext '/c/Users/vasqu/Downloads/Sprint 1 - MVP Versión 1 - Documento maestro.pdf' -)",
+      "WebFetch(domain:www.croody.app)",
+      "Bash(npm test *)"
     ]
   }
 }
