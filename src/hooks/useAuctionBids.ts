@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
 import { parseAbiItem, formatUnits } from "viem";
-import { hardhat } from "wagmi/chains";
+import { ACTIVE_CHAIN } from "@/lib/chain";
 import { getMarketplaceAddress } from "@/lib/contracts";
 
 const BID_PLACED = parseAbiItem(
@@ -45,7 +45,7 @@ const DEMO_BIDS: AuctionBid[] = [
 ];
 
 export function useAuctionBids(auctionId: string, isDemo = false) {
-  const publicClient = usePublicClient({ chainId: hardhat.id });
+  const publicClient = usePublicClient({ chainId: ACTIVE_CHAIN.id });
   const marketplaceAddress = getMarketplaceAddress();
 
   const { data, isLoading, error, refetch } = useQuery({

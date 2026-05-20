@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useWriteContract, useSwitchChain, usePublicClient } from "wagmi";
 import { parseUnits, isAddress } from "viem";
-import { hardhat } from "wagmi/chains";
+import { ACTIVE_CHAIN } from "@/lib/chain";
 import { useWalletContext } from "@/context/WalletContext";
 import { useTxToast } from "@/context/TxToastContext";
 import { getProjectTokenAddress, ERC20_ABI } from "@/lib/contracts";
@@ -23,7 +23,7 @@ export function useSendTokens() {
   const { isDemo } = useWalletContext();
   const { writeContractAsync } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
-  const publicClient = usePublicClient({ chainId: hardhat.id });
+  const publicClient = usePublicClient({ chainId: ACTIVE_CHAIN.id });
   const { addToast, updateToast } = useTxToast();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,14 +61,14 @@ export function useSendTokens() {
         return { success: false, error: msg };
       }
 
-      await switchChainAsync({ chainId: hardhat.id });
+      await switchChainAsync({ chainId: ACTIVE_CHAIN.id });
 
       const hash = await writeContractAsync({
         address: tokenAddress,
         abi: ERC20_ABI,
         functionName: "transfer",
         args: [toWallet as `0x${string}`, parseUnits(amount, 18)],
-        chainId: hardhat.id,
+        chainId: ACTIVE_CHAIN.id,
       });
 
       const toastId = addToast(`Sending ${amount} CRD...`, "pending", hash);

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { parseAbi } from "viem";
-import { hardhat } from "wagmi/chains";
+import { ACTIVE_CHAIN } from "@/lib/chain";
 import { usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
 import { getMarketplaceAddress } from "@/lib/contracts";
 import { useTxToast } from "@/context/TxToastContext";
@@ -20,7 +20,7 @@ export function useCancelAuction() {
   const [error, setError] = useState<string | null>(null);
   const { writeContractAsync } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
-  const publicClient = usePublicClient({ chainId: hardhat.id });
+  const publicClient = usePublicClient({ chainId: ACTIVE_CHAIN.id });
   const { addToast, updateToast } = useTxToast();
 
   const cancelAuction = async (params: CancelAuctionParams) => {
@@ -35,14 +35,14 @@ export function useCancelAuction() {
         throw new Error("Marketplace contract address is not configured");
       }
 
-      await switchChainAsync({ chainId: hardhat.id });
+      await switchChainAsync({ chainId: ACTIVE_CHAIN.id });
 
       const txHash = await writeContractAsync({
         address: marketplaceAddress,
         abi: NFT_MARKETPLACE_ABI,
         functionName: "cancelAuction",
         args: [BigInt(params.auctionId)],
-        chainId: hardhat.id,
+        chainId: ACTIVE_CHAIN.id,
       });
 
       updateToast(toastId, "pending", "Cancelling auction...", txHash);

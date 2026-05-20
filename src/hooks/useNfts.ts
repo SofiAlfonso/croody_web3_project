@@ -3,11 +3,11 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createPublicClient, http } from "viem";
-import { hardhat } from "viem/chains";
+import { ACTIVE_CHAIN } from "@/lib/chain";
 import type { NFT } from "@/lib/mock-data";
 
 const publicClient = createPublicClient({
-  chain: hardhat,
+  chain: ACTIVE_CHAIN,
   transport: http(process.env.NEXT_PUBLIC_RPC_URL ?? "http://127.0.0.1:8545"),
 });
 import { mockNFTs } from "@/lib/mock-data";

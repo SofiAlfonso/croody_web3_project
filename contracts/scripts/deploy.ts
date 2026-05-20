@@ -5,7 +5,12 @@ import * as path from "node:path";
 async function main() {
   console.log("Deploying contracts...");
 
-  const [deployer, ownerA, ownerB] = await ethers.getSigners();
+  const signers = await ethers.getSigners();
+  const deployer = signers[0];
+  const network = await ethers.provider.getNetwork();
+  const isLocalhost = network.chainId === 31337n;
+  const ownerA = isLocalhost ? signers[1] : deployer;
+  const ownerB = isLocalhost ? signers[2] : deployer;
 
   const nftCollectionFactory = await ethers.getContractFactory("NFTCollection");
   const nftCollection = await nftCollectionFactory.deploy(deployer.address);

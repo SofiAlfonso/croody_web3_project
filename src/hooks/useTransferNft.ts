@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { useWriteContract, useSwitchChain, usePublicClient } from "wagmi";
 import { isAddress, createPublicClient, http } from "viem";
-import { hardhat } from "viem/chains";
+import { ACTIVE_CHAIN } from "@/lib/chain";
 import { useWalletContext } from "@/context/WalletContext";
 import { useTxToast } from "@/context/TxToastContext";
 import { getNftCollectionAddress, getMarketplaceAddress } from "@/lib/contracts";
 import { savePendingTx } from "@/lib/transaction-store";
 
 const publicClient = createPublicClient({
-  chain: hardhat,
+  chain: ACTIVE_CHAIN,
   transport: http(process.env.NEXT_PUBLIC_RPC_URL ?? "http://127.0.0.1:8545"),
 });
 
@@ -72,7 +72,7 @@ export function useTransferNft() {
   const { walletAddress, isDemo } = useWalletContext();
   const { writeContractAsync } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
-  const wagmiPublicClient = usePublicClient({ chainId: hardhat.id });
+  const wagmiPublicClient = usePublicClient({ chainId: ACTIVE_CHAIN.id });
   const { addToast, updateToast } = useTxToast();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -130,14 +130,14 @@ export function useTransferNft() {
         }
       }
 
-      await switchChainAsync({ chainId: hardhat.id });
+      await switchChainAsync({ chainId: ACTIVE_CHAIN.id });
 
       const hash = await writeContractAsync({
         address: nftAddress,
         abi: NFT_ABI,
         functionName: "safeTransferFrom",
         args: [walletAddress as `0x${string}`, toWallet as `0x${string}`, BigInt(nftId)],
-        chainId: hardhat.id,
+        chainId: ACTIVE_CHAIN.id,
       });
 
       const toastId = addToast(`Transferring NFT #${nftId}...`, "pending", hash);

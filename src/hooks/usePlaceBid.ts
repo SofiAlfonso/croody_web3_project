@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { parseAbi, parseEther } from "viem";
-import { hardhat } from "wagmi/chains";
+import { ACTIVE_CHAIN } from "@/lib/chain";
 import { usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
 import { getMarketplaceAddress, getProjectTokenAddress } from "@/lib/contracts";
 import { useWalletContext } from "@/context/WalletContext";
@@ -27,7 +27,7 @@ export function usePlaceBid() {
   const [error, setError] = useState<string | null>(null);
   const { writeContractAsync } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
-  const publicClient = usePublicClient({ chainId: hardhat.id });
+  const publicClient = usePublicClient({ chainId: ACTIVE_CHAIN.id });
   const { walletAddress } = useWalletContext();
   const { addToast, updateToast } = useTxToast();
 
@@ -44,7 +44,7 @@ export function usePlaceBid() {
         throw new Error("Contract addresses are not configured");
       }
 
-      await switchChainAsync({ chainId: hardhat.id });
+      await switchChainAsync({ chainId: ACTIVE_CHAIN.id });
 
       const bidAmount = parseEther(params.amount);
       const auctionId = BigInt(params.auctionId);
@@ -54,7 +54,7 @@ export function usePlaceBid() {
         abi: PROJECT_TOKEN_ABI,
         functionName: "approve",
         args: [marketplaceAddress, bidAmount],
-        chainId: hardhat.id,
+        chainId: ACTIVE_CHAIN.id,
       });
 
       if (!publicClient) throw new Error("Public client not available");
@@ -67,7 +67,7 @@ export function usePlaceBid() {
         abi: NFT_MARKETPLACE_ABI,
         functionName: "placeBid",
         args: [auctionId, bidAmount],
-        chainId: hardhat.id,
+        chainId: ACTIVE_CHAIN.id,
       });
 
       updateToast(toastId, "pending", "Placing bid...", bidTxHash);

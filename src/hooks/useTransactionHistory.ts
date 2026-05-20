@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
 import { formatUnits, parseAbiItem } from "viem";
-import { hardhat } from "wagmi/chains";
+import { ACTIVE_CHAIN } from "@/lib/chain";
 import { useWalletContext } from "@/context/WalletContext";
 import {
   getNftCollectionAddress,
@@ -346,7 +346,7 @@ async function fetchOnChainHistory(
 
 export function useTransactionHistory() {
   const { walletAddress, isDemo } = useWalletContext();
-  const publicClient = usePublicClient({ chainId: hardhat.id });
+  const publicClient = usePublicClient({ chainId: ACTIVE_CHAIN.id });
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["transaction-history", walletAddress],
