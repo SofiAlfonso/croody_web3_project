@@ -6,6 +6,7 @@ import { hardhat } from "wagmi/chains";
 import { usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
 import { getMarketplaceAddress, getProjectTokenAddress } from "@/lib/contracts";
 import { useWalletContext } from "@/context/WalletContext";
+import { useTxToast } from "@/context/TxToastContext";
 import { savePendingTx } from "@/lib/transaction-store";
 
 type PlaceBidParams = {
@@ -28,10 +29,13 @@ export function usePlaceBid() {
   const { switchChainAsync } = useSwitchChain();
   const publicClient = usePublicClient({ chainId: hardhat.id });
   const { walletAddress } = useWalletContext();
+  const { addToast, updateToast } = useTxToast();
 
   const placeBid = async (params: PlaceBidParams) => {
     setIsPending(true);
     setError(null);
+
+    const toastId = addToast("Approving tokens...", "pending");
 
     try {
       const tokenAddress = getProjectTokenAddress();
@@ -56,6 +60,8 @@ export function usePlaceBid() {
       if (!publicClient) throw new Error("Public client not available");
       await publicClient.waitForTransactionReceipt({ hash: approveTxHash });
 
+      updateToast(toastId, "pending", "Placing bid...");
+
       const bidTxHash = await writeContractAsync({
         address: marketplaceAddress,
         abi: NFT_MARKETPLACE_ABI,
@@ -63,6 +69,8 @@ export function usePlaceBid() {
         args: [auctionId, bidAmount],
         chainId: hardhat.id,
       });
+
+      updateToast(toastId, "pending", "Placing bid...", bidTxHash);
 
       savePendingTx({
         id: bidTxHash,
@@ -74,10 +82,17 @@ export function usePlaceBid() {
         auctionId: params.auctionId,
         walletAddress: walletAddress ?? "",
       });
+
+      publicClient
+        .waitForTransactionReceipt({ hash: bidTxHash as `0x${string}` })
+        .then(() => updateToast(toastId, "confirmed", `Bid of ${params.amount} CRD placed!`))
+        .catch(() => updateToast(toastId, "failed", "Bid transaction failed"));
+
       return { success: true as const, txHash: bidTxHash };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to place bid";
       setError(message);
+      updateToast(toastId, "failed", message);
       return { success: false as const };
     } finally {
       setIsPending(false);

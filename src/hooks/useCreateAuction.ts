@@ -6,6 +6,7 @@ import { usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
 import { hardhat } from "wagmi/chains";
 import { getMarketplaceAddress, getNftCollectionAddress } from "@/lib/contracts";
 import { useWalletContext } from "@/context/WalletContext";
+import { useTxToast } from "@/context/TxToastContext";
 import { savePendingTx } from "@/lib/transaction-store";
 
 const NFT_COLLECTION_ABI = parseAbi([
@@ -34,10 +35,13 @@ export function useCreateAuction() {
   const { switchChainAsync } = useSwitchChain();
   const publicClient = usePublicClient({ chainId: hardhat.id });
   const { walletAddress } = useWalletContext();
+  const { addToast, updateToast } = useTxToast();
 
   const createAuction = async (_params: CreateAuctionParams) => {
     setIsPending(true);
     setError(null);
+
+    const toastId = addToast("Approving NFT transfer...", "pending");
 
     try {
       const nftCollection = getNftCollectionAddress();
@@ -48,7 +52,6 @@ export function useCreateAuction() {
 
       await switchChainAsync({ chainId: hardhat.id });
 
-      // 1. Approve the marketplace to handle the NFT
       const approveTxHash = await writeContractAsync({
         address: nftCollection,
         abi: NFT_COLLECTION_ABI,
@@ -59,7 +62,8 @@ export function useCreateAuction() {
       if (!publicClient) throw new Error("Public client not available");
       await publicClient.waitForTransactionReceipt({ hash: approveTxHash });
 
-      // 2. Create the auction on the marketplace contract
+      updateToast(toastId, "pending", "Creating auction...");
+
       const startPriceTokens = parseEther(_params.minimumBid);
       const durationSeconds = BigInt(_params.durationHours * 3600);
 
@@ -70,6 +74,8 @@ export function useCreateAuction() {
         args: [nftCollection, BigInt(_params.nftId), startPriceTokens, durationSeconds],
         chainId: hardhat.id,
       });
+
+      updateToast(toastId, "pending", "Creating auction...", createTxHash);
 
       const createReceipt = await publicClient.waitForTransactionReceipt({ hash: createTxHash });
       let auctionId: string | undefined;
@@ -91,6 +97,8 @@ export function useCreateAuction() {
         }
       }
 
+      updateToast(toastId, "confirmed", "Auction created!");
+
       savePendingTx({
         id: createTxHash,
         type: "auction_created",
@@ -106,6 +114,7 @@ export function useCreateAuction() {
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to create auction";
       setError(message);
+      updateToast(toastId, "failed", message);
       return { success: false as const };
     } finally {
       setIsPending(false);

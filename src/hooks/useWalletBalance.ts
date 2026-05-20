@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useReadContract } from "wagmi";
+import { hardhat } from "wagmi/chains";
 import { formatUnits } from "viem";
 import { useWalletContext } from "@/context/WalletContext";
 import deployedAddresses from "@/lib/deployed-addresses.json";
@@ -52,6 +53,7 @@ export function useWalletBalance(): WalletBalanceResult {
     address: deployedAddresses.contracts.projectToken as `0x${string}`,
     abi: ERC20_ABI,
     functionName: "balanceOf",
+    chainId: hardhat.id,
     args: address ? [address] : undefined,
     query: {
       enabled: Boolean(address) && isConnected && !isDemo,

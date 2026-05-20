@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteContract, useSwitchChain } from "wagmi";
+import { useWriteContract, useSwitchChain, usePublicClient } from "wagmi";
 import { isAddress, createPublicClient, http } from "viem";
 import { hardhat } from "viem/chains";
 import { useWalletContext } from "@/context/WalletContext";
+import { useTxToast } from "@/context/TxToastContext";
 import { getNftCollectionAddress, getMarketplaceAddress } from "@/lib/contracts";
 import { savePendingTx } from "@/lib/transaction-store";
 
@@ -71,6 +72,8 @@ export function useTransferNft() {
   const { walletAddress, isDemo } = useWalletContext();
   const { writeContractAsync } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
+  const wagmiPublicClient = usePublicClient({ chainId: hardhat.id });
+  const { addToast, updateToast } = useTxToast();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -93,7 +96,9 @@ export function useTransferNft() {
     setIsPending(true);
     try {
       if (isDemo) {
+        const toastId = addToast(`Transferring NFT #${nftId}...`, "pending");
         await new Promise((r) => setTimeout(r, 1000));
+        updateToast(toastId, "confirmed", `NFT #${nftId} transferred!`);
         return { success: true, hash: "0xdemo" };
       }
 
@@ -134,6 +139,9 @@ export function useTransferNft() {
         args: [walletAddress as `0x${string}`, toWallet as `0x${string}`, BigInt(nftId)],
         chainId: hardhat.id,
       });
+
+      const toastId = addToast(`Transferring NFT #${nftId}...`, "pending", hash);
+
       savePendingTx({
         id: hash,
         type: "nft_sent",
@@ -143,10 +151,18 @@ export function useTransferNft() {
         tokenId: nftId,
         walletAddress,
       });
+
+      const client = wagmiPublicClient ?? publicClient;
+      client
+        .waitForTransactionReceipt({ hash: hash as `0x${string}` })
+        .then(() => updateToast(toastId, "confirmed", `NFT #${nftId} transferred!`))
+        .catch(() => updateToast(toastId, "failed", "NFT transfer failed"));
+
       return { success: true, hash };
     } catch {
       const msg = "Failed to transfer NFT";
       setError(msg);
+      addToast(msg, "failed");
       return { success: false, error: msg };
     } finally {
       setIsPending(false);

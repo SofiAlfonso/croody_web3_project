@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteContract, useSwitchChain } from "wagmi";
+import { useWriteContract, useSwitchChain, usePublicClient } from "wagmi";
 import { parseUnits, isAddress } from "viem";
 import { hardhat } from "wagmi/chains";
 import { useWalletContext } from "@/context/WalletContext";
+import { useTxToast } from "@/context/TxToastContext";
 import { getProjectTokenAddress, ERC20_ABI } from "@/lib/contracts";
 import { savePendingTx } from "@/lib/transaction-store";
 
@@ -22,6 +23,8 @@ export function useSendTokens() {
   const { isDemo } = useWalletContext();
   const { writeContractAsync } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
+  const publicClient = usePublicClient({ chainId: hardhat.id });
+  const { addToast, updateToast } = useTxToast();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,7 +48,9 @@ export function useSendTokens() {
     setIsPending(true);
     try {
       if (isDemo) {
+        const toastId = addToast(`Sending ${amount} CRD...`, "pending");
         await new Promise((r) => setTimeout(r, 1000));
+        updateToast(toastId, "confirmed", `${amount} CRD sent!`);
         return { success: true, hash: undefined };
       }
 
@@ -65,6 +70,9 @@ export function useSendTokens() {
         args: [toWallet as `0x${string}`, parseUnits(amount, 18)],
         chainId: hardhat.id,
       });
+
+      const toastId = addToast(`Sending ${amount} CRD...`, "pending", hash);
+
       savePendingTx({
         id: hash,
         type: "token_sent",
@@ -74,10 +82,19 @@ export function useSendTokens() {
         amount,
         walletAddress: fromWallet,
       });
+
+      if (publicClient) {
+        publicClient
+          .waitForTransactionReceipt({ hash: hash as `0x${string}` })
+          .then(() => updateToast(toastId, "confirmed", `${amount} CRD sent!`))
+          .catch(() => updateToast(toastId, "failed", "Token transfer failed"));
+      }
+
       return { success: true, hash };
     } catch {
       const msg = "Transaction failed";
       setError(msg);
+      addToast(msg, "failed");
       return { success: false, error: msg };
     } finally {
       setIsPending(false);
