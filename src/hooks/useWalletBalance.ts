@@ -5,7 +5,7 @@ import { useReadContract } from "wagmi";
 import { hardhat } from "wagmi/chains";
 import { formatUnits } from "viem";
 import { useWalletContext } from "@/context/WalletContext";
-import deployedAddresses from "@/lib/deployed-addresses.json";
+import { getProjectTokenAddress } from "@/lib/contracts";
 
 const ERC20_ABI = [
   {
@@ -50,7 +50,7 @@ export function useWalletBalance(): WalletBalanceResult {
   }, [walletAddress]);
 
   const { data, isLoading, isError } = useReadContract({
-    address: deployedAddresses.contracts.projectToken as `0x${string}`,
+    address: getProjectTokenAddress() ?? undefined,
     abi: ERC20_ABI,
     functionName: "balanceOf",
     chainId: hardhat.id,
