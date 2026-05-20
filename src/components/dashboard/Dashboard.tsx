@@ -95,12 +95,20 @@ export default function Dashboard() {
               Could not fetch on-chain balance. Verify your Hardhat network and wallet connection.
             </div>
           )}
-          <Link
-            href="/send"
-            className="bg-gator-100 text-gator-700 hover:bg-gator-300 inline-flex rounded-lg px-4 py-2 text-sm transition-colors"
-          >
-            Send Tokens
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/send"
+              className="bg-gator-100 text-gator-700 hover:bg-gator-300 inline-flex rounded-lg px-4 py-2 text-sm transition-colors"
+            >
+              Send Tokens
+            </Link>
+            <Link
+              href="/history"
+              className="border-jungle-200 text-jungle-600 hover:bg-jungle-50 inline-flex rounded-lg border px-4 py-2 text-sm transition-colors"
+            >
+              Transaction History
+            </Link>
+          </div>
         </div>
 
         {/* My NFTs Section */}

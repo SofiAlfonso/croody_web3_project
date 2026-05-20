@@ -5,6 +5,8 @@ import { parseAbi, parseEther } from "viem";
 import { hardhat } from "wagmi/chains";
 import { usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
 import { getMarketplaceAddress, getProjectTokenAddress } from "@/lib/contracts";
+import { useWalletContext } from "@/context/WalletContext";
+import { savePendingTx } from "@/lib/transaction-store";
 
 type PlaceBidParams = {
   auctionId: string;
@@ -25,6 +27,7 @@ export function usePlaceBid() {
   const { writeContractAsync } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
   const publicClient = usePublicClient({ chainId: hardhat.id });
+  const { walletAddress } = useWalletContext();
 
   const placeBid = async (params: PlaceBidParams) => {
     setIsPending(true);
@@ -61,6 +64,16 @@ export function usePlaceBid() {
         chainId: hardhat.id,
       });
 
+      savePendingTx({
+        id: bidTxHash,
+        type: "bid_placed",
+        hash: bidTxHash as `0x${string}`,
+        from: walletAddress ?? "",
+        to: marketplaceAddress,
+        amount: params.amount,
+        auctionId: params.auctionId,
+        walletAddress: walletAddress ?? "",
+      });
       return { success: true as const, txHash: bidTxHash };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to place bid";

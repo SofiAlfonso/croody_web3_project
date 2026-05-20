@@ -6,6 +6,7 @@ import { isAddress, createPublicClient, http } from "viem";
 import { hardhat } from "viem/chains";
 import { useWalletContext } from "@/context/WalletContext";
 import { getNftCollectionAddress, getMarketplaceAddress } from "@/lib/contracts";
+import { savePendingTx } from "@/lib/transaction-store";
 
 const publicClient = createPublicClient({
   chain: hardhat,
@@ -133,7 +134,15 @@ export function useTransferNft() {
         args: [walletAddress as `0x${string}`, toWallet as `0x${string}`, BigInt(nftId)],
         chainId: hardhat.id,
       });
-
+      savePendingTx({
+        id: hash,
+        type: "nft_sent",
+        hash: hash as `0x${string}`,
+        from: walletAddress,
+        to: toWallet,
+        tokenId: nftId,
+        walletAddress,
+      });
       return { success: true, hash };
     } catch {
       const msg = "Failed to transfer NFT";

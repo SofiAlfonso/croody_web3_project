@@ -6,6 +6,7 @@ import { parseUnits, isAddress } from "viem";
 import { hardhat } from "wagmi/chains";
 import { useWalletContext } from "@/context/WalletContext";
 import { getProjectTokenAddress, ERC20_ABI } from "@/lib/contracts";
+import { savePendingTx } from "@/lib/transaction-store";
 
 type SendTokensParams = {
   fromWallet: string;
@@ -25,7 +26,7 @@ export function useSendTokens() {
   const [error, setError] = useState<string | null>(null);
 
   const sendTokens = async (params: SendTokensParams): Promise<SendResult> => {
-    const { toWallet, amount } = params;
+    const { fromWallet, toWallet, amount } = params;
     setError(null);
 
     if (!isAddress(toWallet)) {
@@ -63,6 +64,15 @@ export function useSendTokens() {
         functionName: "transfer",
         args: [toWallet as `0x${string}`, parseUnits(amount, 18)],
         chainId: hardhat.id,
+      });
+      savePendingTx({
+        id: hash,
+        type: "token_sent",
+        hash: hash as `0x${string}`,
+        from: fromWallet,
+        to: toWallet,
+        amount,
+        walletAddress: fromWallet,
       });
       return { success: true, hash };
     } catch {

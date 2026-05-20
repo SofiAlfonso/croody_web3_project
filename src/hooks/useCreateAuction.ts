@@ -5,6 +5,8 @@ import { decodeEventLog, parseAbi, parseAbiItem, parseEther } from "viem";
 import { usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
 import { hardhat } from "wagmi/chains";
 import { getMarketplaceAddress, getNftCollectionAddress } from "@/lib/contracts";
+import { useWalletContext } from "@/context/WalletContext";
+import { savePendingTx } from "@/lib/transaction-store";
 
 const NFT_COLLECTION_ABI = parseAbi([
   "function approve(address to, uint256 tokenId) external",
@@ -31,6 +33,7 @@ export function useCreateAuction() {
   const { writeContractAsync } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
   const publicClient = usePublicClient({ chainId: hardhat.id });
+  const { walletAddress } = useWalletContext();
 
   const createAuction = async (_params: CreateAuctionParams) => {
     setIsPending(true);
@@ -88,6 +91,17 @@ export function useCreateAuction() {
         }
       }
 
+      savePendingTx({
+        id: createTxHash,
+        type: "auction_created",
+        hash: createTxHash as `0x${string}`,
+        from: walletAddress ?? "",
+        to: marketplace,
+        amount: _params.minimumBid,
+        tokenId: _params.nftId,
+        auctionId,
+        walletAddress: walletAddress ?? "",
+      });
       return { success: true as const, txHash: createTxHash, auctionId };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to create auction";
