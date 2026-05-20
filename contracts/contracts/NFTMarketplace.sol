@@ -157,9 +157,16 @@ contract NFTMarketplace is ReentrancyGuard {
         require(auction.seller == msg.sender, "Not the seller");
         require(!auction.ended, "Auction already ended");
         require(!auction.cancelled, "Already cancelled");
-        require(auction.highestBidder == address(0), "Cannot cancel with bids");
 
         auction.cancelled = true;
+
+        // Refund highest bidder if there was a bid
+        if (auction.highestBidder != address(0)) {
+            require(
+                paymentToken.transfer(auction.highestBidder, auction.highestBid),
+                "Refund failed"
+            );
+        }
 
         // Return NFT to seller
         IERC721 nft = IERC721(auction.nftContract);

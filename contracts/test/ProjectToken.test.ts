@@ -12,7 +12,7 @@ describe("ProjectToken", function () {
   beforeEach(async () => {
     [owner, addr1, addr2] = await ethers.getSigners();
     const TokenFactory = await ethers.getContractFactory("ProjectToken");
-    token = await TokenFactory.deploy();
+    token = (await TokenFactory.deploy()) as unknown as ProjectToken;
     await token.waitForDeployment();
   });
 

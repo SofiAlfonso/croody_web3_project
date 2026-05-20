@@ -128,16 +128,14 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
                   <div className="rounded-lg bg-neutral-100 px-5 py-3 text-center text-sm text-neutral-700">
                     You are the seller — wait for the auction to expire to close it
                   </div>
-                  {!auction.highestBidder && (
-                    <button
-                      className="w-full rounded-lg border border-red-200 px-5 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-                      type="button"
-                      disabled={isCancelling}
-                      onClick={() => setIsCancelConfirmOpen(true)}
-                    >
-                      {isCancelling ? "Cancelling..." : "Cancel Auction"}
-                    </button>
-                  )}
+                  <button
+                    className="w-full rounded-lg border border-red-200 px-5 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                    type="button"
+                    disabled={isCancelling}
+                    onClick={() => setIsCancelConfirmOpen(true)}
+                  >
+                    {isCancelling ? "Cancelling..." : "Cancel Auction"}
+                  </button>
                 </>
               ) : (
                 <button
@@ -379,7 +377,10 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
         }}
       >
         <div className="mt-4 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-          NFT #{auction.id} will be returned to your wallet and the auction will be removed.
+          The NFT will be returned to your wallet.
+          {auction.highestBidder && (
+            <span> The current highest bidder will be refunded automatically.</span>
+          )}
         </div>
       </ActionModal>
     </div>

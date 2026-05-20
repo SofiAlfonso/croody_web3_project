@@ -264,7 +264,7 @@ describe("NFTMarketplace", function () {
       expect(auction.cancelled).to.be.true;
     });
 
-    it("Should fail to cancel if there are bids", async function () {
+    it("Should cancel and refund bidder when there are bids", async function () {
       const { nft, token, marketplace, seller, bidderA } = await deployMarketplaceFixture();
       const nftAddr = await nft.getAddress();
       const mktAddr = await marketplace.getAddress();
@@ -275,9 +275,17 @@ describe("NFTMarketplace", function () {
       await token.connect(bidderA).approve(mktAddr, BID_AMOUNT);
       await marketplace.connect(bidderA).placeBid(1, BID_AMOUNT);
 
+      const balanceBefore = await token.balanceOf(bidderA.address);
+
       await expect(
         marketplace.connect(seller).cancelAuction(1)
-      ).to.be.revertedWith("Cannot cancel with bids");
+      ).to.emit(marketplace, "AuctionCancelled");
+
+      // Bidder should be refunded
+      const balanceAfter = await token.balanceOf(bidderA.address);
+      expect(balanceAfter).to.equal(balanceBefore + BID_AMOUNT);
+      // NFT should be returned to seller
+      expect(await nft.ownerOf(1)).to.equal(seller.address);
     });
 
     it("Should fail if non-seller tries to cancel", async function () {
