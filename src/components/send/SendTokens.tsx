@@ -7,6 +7,7 @@ import { useWalletContext } from "@/context/WalletContext";
 import AppHeader from "@/components/shared/AppHeader";
 import WalletBadge from "@/components/shared/WalletBadge";
 import BackToDashboardLink from "@/components/shared/BackToDashboardLink";
+import ActionModal from "@/components/shared/ActionModal";
 
 export default function SendTokens() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function SendTokens() {
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { sendTokens, isPending: isSendingTokens } = useSendTokens();
 
   useEffect(() => {
@@ -33,7 +35,8 @@ export default function SendTokens() {
 
   const canSend = recipient.trim().length > 0 && amount.trim().length > 0 && !isSendingTokens;
 
-  const handleSend = async () => {
+  const handleConfirmSend = async () => {
+    setIsConfirmOpen(false);
     setFeedback(null);
     const result = await sendTokens({
       fromWallet: walletAddress!,
@@ -126,13 +129,35 @@ export default function SendTokens() {
               className="bg-gator-100 text-gator-700 hover:bg-gator-300 inline-flex rounded-lg px-5 py-2 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               type="button"
               disabled={!canSend}
-              onClick={handleSend}
+              onClick={() => setIsConfirmOpen(true)}
             >
               {isSendingTokens ? "Sending..." : "Send Tokens"}
             </button>
           </div>
         </div>
       </main>
+
+      <ActionModal
+        isOpen={isConfirmOpen}
+        title="Confirm Transfer"
+        description="Please review the details before confirming. This action cannot be undone."
+        cancelLabel="Cancel"
+        confirmLabel="Confirm Transfer"
+        isConfirming={isSendingTokens}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmSend}
+      >
+        <div className="mt-4 space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-neutral-500">Amount</span>
+            <span className="font-semibold text-neutral-900">{amount} CRD</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="shrink-0 text-neutral-500">To</span>
+            <span className="truncate font-mono text-neutral-900">{recipient}</span>
+          </div>
+        </div>
+      </ActionModal>
     </div>
   );
 }

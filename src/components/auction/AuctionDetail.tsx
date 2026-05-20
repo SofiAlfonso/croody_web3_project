@@ -27,6 +27,8 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
   const router = useRouter();
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState("");
+  const [isEndConfirmOpen, setIsEndConfirmOpen] = useState(false);
+  const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
   const { walletAddress } = useWalletContext();
   const { data: auction } = useAuctionById(id);
   const { placeBid, isPending: isPlacingBid } = usePlaceBid();
@@ -107,12 +109,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
                   className="bg-gator-500 hover:bg-gator-700 w-full rounded-lg px-5 py-3 text-center text-sm text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60"
                   type="button"
                   disabled={isEndingAuction}
-                  onClick={async () => {
-                    const result = await endAuction({ auctionId: auction.id });
-                    if (result.success) {
-                      router.push("/dashboard");
-                    }
-                  }}
+                  onClick={() => setIsEndConfirmOpen(true)}
                 >
                   {isEndingAuction ? "Closing Auction..." : "Close Auction"}
                 </button>
@@ -126,12 +123,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
                       className="w-full rounded-lg border border-red-200 px-5 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
                       type="button"
                       disabled={isCancelling}
-                      onClick={async () => {
-                        const result = await cancelAuction({ auctionId: auction.id });
-                        if (result.success) {
-                          router.push("/dashboard");
-                        }
-                      }}
+                      onClick={() => setIsCancelConfirmOpen(true)}
                     >
                       {isCancelling ? "Cancelling..." : "Cancel Auction"}
                     </button>
@@ -250,6 +242,59 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
           </div>
         </ActionModal>
       )}
+
+      {/* Close Auction Modal */}
+      <ActionModal
+        isOpen={isEndConfirmOpen}
+        title="Close Auction"
+        description="This will end the auction and transfer the NFT to the highest bidder. This action cannot be undone."
+        cancelLabel="Cancel"
+        confirmLabel="Close Auction"
+        isConfirming={isEndingAuction}
+        onCancel={() => setIsEndConfirmOpen(false)}
+        onConfirm={async () => {
+          setIsEndConfirmOpen(false);
+          const result = await endAuction({ auctionId: auction.id });
+          if (result.success) {
+            router.push("/dashboard");
+          }
+        }}
+      >
+        <div className="mt-4 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-neutral-500">Auction ID</span>
+            <span className="font-semibold text-neutral-900">#{auction.id}</span>
+          </div>
+          <div className="mt-1 flex justify-between">
+            <span className="text-neutral-500">Winning bid</span>
+            <span className="font-semibold text-neutral-900">
+              {auction.currentBid > 0 ? `${auction.currentBid} CRD` : "No bids"}
+            </span>
+          </div>
+        </div>
+      </ActionModal>
+
+      {/* Cancel Auction Modal */}
+      <ActionModal
+        isOpen={isCancelConfirmOpen}
+        title="Cancel Auction"
+        description="Are you sure you want to cancel this auction? This action is permanent and cannot be undone."
+        cancelLabel="Go Back"
+        confirmLabel="Cancel Auction"
+        isConfirming={isCancelling}
+        onCancel={() => setIsCancelConfirmOpen(false)}
+        onConfirm={async () => {
+          setIsCancelConfirmOpen(false);
+          const result = await cancelAuction({ auctionId: auction.id });
+          if (result.success) {
+            router.push("/dashboard");
+          }
+        }}
+      >
+        <div className="mt-4 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+          NFT #{auction.id} will be returned to your wallet and the auction will be removed.
+        </div>
+      </ActionModal>
     </div>
   );
 }

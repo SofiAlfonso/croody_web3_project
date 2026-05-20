@@ -5,6 +5,7 @@ import { parseAbi } from "viem";
 import { hardhat } from "wagmi/chains";
 import { usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
 import { getMarketplaceAddress } from "@/lib/contracts";
+import { useTxToast } from "@/context/TxToastContext";
 
 type EndAuctionParams = {
   auctionId: string;
@@ -20,10 +21,13 @@ export function useEndAuction() {
   const { writeContractAsync } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
   const publicClient = usePublicClient({ chainId: hardhat.id });
+  const { addToast, updateToast } = useTxToast();
 
   const endAuction = async (params: EndAuctionParams) => {
     setIsPending(true);
     setError(null);
+
+    const toastId = addToast("Closing auction...", "pending");
 
     try {
       const marketplaceAddress = getMarketplaceAddress();
@@ -41,13 +45,17 @@ export function useEndAuction() {
         chainId: hardhat.id,
       });
 
+      updateToast(toastId, "pending", "Closing auction...", txHash);
+
       if (!publicClient) throw new Error("Public client not available");
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
+      updateToast(toastId, "confirmed", "Auction closed!");
       return { success: true as const, txHash };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to close auction";
       setError(message);
+      updateToast(toastId, "failed", message);
       return { success: false as const };
     } finally {
       setIsPending(false);
