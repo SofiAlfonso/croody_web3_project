@@ -1,0 +1,67 @@
+src/components/shared/NotFoundState.tsx
+  s_12df35c224fa75::t_785c562b5b4ba1 16
+src/components/nfts/NftGallery.tsx
+  s_12df35c224fa75::t_93c75470d5e753 165
+src/components/auction/AuctionDetail.tsx
+  s_12df35c224fa75::t_32b5f14daf30ff 99
+  s_12df35c224fa75::t_5339b373abb1cd 163,171,181,191
+  s_12df35c224fa75::t_322ca786f88d36 356
+  s_12df35c224fa75::t_2ce0db4edb548b 215-221,223-237,239-241,243-281,283-291
+  s_12df35c224fa75::t_b79bc4323c3cc3 203
+  s_12df35c224fa75::t_eb74ca3009be5b 238,242
+  s_12df35c224fa75::t_3e68cc9f94728d 89
+  s_12df35c224fa75::t_f746528c5d4f3c 6
+  s_12df35c224fa75::t_266ac09b87985a 222
+  s_12df35c224fa75::t_125720a275052a 282
+  s_12df35c224fa75::t_4d4369b140740e 12
+  s_12df35c224fa75::t_a0c2e92ff8de95 41,46
+  s_12df35c224fa75::t_414e8acece65f8 326
+  s_12df35c224fa75::t_1cd2692839d101 128
+  s_12df35c224fa75::t_d5a5f81bb53ab0 27-34
+  s_12df35c224fa75::t_e65c148f9d0e2c 352
+src/components/history/TransactionHistory.tsx
+  s_12df35c224fa75::t_8cefed778960b0 136
+  s_12df35c224fa75::t_05df9e14a156b6 298
+  s_12df35c224fa75::t_2fe71065fd710c 254
+  s_12df35c224fa75::t_edeccd4d22ecbc 150
+  s_12df35c224fa75::t_aa1ed391f7d1ed 266
+  s_12df35c224fa75::t_e3b786897535de 276
+  s_12df35c224fa75::t_cf1995e21f34b3 157
+src/components/nft/NftGallery.tsx
+  s_12df35c224fa75::t_3479430a175895 72
+  s_12df35c224fa75::t_95b7183b8cd9cc 66
+  s_12df35c224fa75::t_76e5a8b33e7d81 165
+  s_12df35c224fa75::t_7490cb371fa687 124
+src/hooks/useEndAuction.ts
+  s_12df35c224fa75::t_20e3424ae13ae3 55-57
+src/components/send/SendTokens.tsx
+  s_12df35c224fa75::t_6745881dddddb2 156
+  s_12df35c224fa75::t_752080bcbcadda 71
+  s_12df35c224fa75::t_41b85e33b20e49 152
+src/hooks/useCreateAuction.ts
+  s_12df35c224fa75::t_e7c0a5ec9bddd8 114-116
+src/components/dashboard/Dashboard.tsx
+  s_12df35c224fa75::t_7289f69598ce90 107
+src/hooks/usePlaceBid.ts
+  s_12df35c224fa75::t_a369b38c936b58 92-94
+src/hooks/useCancelAuction.ts
+  s_12df35c224fa75::t_a6b922984f04ed 55-57
+src/hooks/useAuctionBids.ts
+  s_12df35c224fa75::t_b3ee89c054c42d 1-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "640882d4375a10e45a3245742d930935f403c3d5",
+  "prompts": {},
+  "sessions": {
+    "s_12df35c224fa75": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7504e48-76c0-4800-89f3-f833986449d7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "SofiAlfonso <asalfonso@eafit.edu.co>"
+    }
+  }
+}
