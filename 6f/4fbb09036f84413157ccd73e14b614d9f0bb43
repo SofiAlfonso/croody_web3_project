@@ -1,0 +1,33 @@
+src/components/auction/AuctionDetail.tsx
+  s_12df35c224fa75::t_80aa2eac15024b 245-297
+  s_12df35c224fa75::t_8cefbd45acc1c8 112
+  s_12df35c224fa75::t_74e53899c020b2 126
+  s_12df35c224fa75::t_735e05a5a854f1 30-31
+src/hooks/useEndAuction.ts
+  s_12df35c224fa75::t_184f220866779b 24,30-31,48-49,53,58
+  s_12df35c224fa75::t_402871a1e38e7f 8
+src/components/send/SendTokens.tsx
+  s_12df35c224fa75::t_3e2de7e4410e0c 132,139-160
+  s_12df35c224fa75::t_3f94a94256eb17 10
+  s_12df35c224fa75::t_4a2f5644a9119f 21
+  s_12df35c224fa75::t_9297707fba8c17 38-39
+src/hooks/useCancelAuction.ts
+  s_12df35c224fa75::t_23d4140b448160 8
+  s_12df35c224fa75::t_693dbdd9c592c2 24,30-31,48-49,53,58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "6f4fbb09036f84413157ccd73e14b614d9f0bb43",
+  "prompts": {},
+  "sessions": {
+    "s_12df35c224fa75": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7504e48-76c0-4800-89f3-f833986449d7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "SofiAlfonso <asalfonso@eafit.edu.co>"
+    }
+  }
+}
