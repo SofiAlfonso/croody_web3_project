@@ -1,0 +1,58 @@
+src/context/TxToastContext.tsx
+  s_12df35c224fa75::t_80cfc4946b7e9f 1-95
+src/lib/transaction-store.ts
+  s_291d3b2c23eff2::t_0eb481d27ca24d 1-48
+src/hooks/useSendTokens.ts
+  s_12df35c224fa75::t_91895802c92dd9 4,8
+  s_12df35c224fa75::t_511674df2460e9 26-27,51,53,73-75,85-92,97
+src/hooks/useTransferNft.ts
+  s_12df35c224fa75::t_d84cbd3da87212 75-76,99,101,142-144,154-160,165
+  s_12df35c224fa75::t_e9ea5132de93cb 4,8
+src/hooks/usePlaceBid.ts
+  s_12df35c224fa75::t_8b12fbf253ee15 32,38-39,63-64,73-74,85-90,95
+  s_12df35c224fa75::t_fc1e82547f2b93 9
+src/components/history/TransactionHistory.tsx
+  s_291d3b2c23eff2::t_7d63464570b517 1-310
+src/hooks/useCreateAuction.ts
+  s_12df35c224fa75::t_91deca6f1513b7 38,44-45,65-66,78-79,100-101,117
+  s_12df35c224fa75::t_d39ccfe8f09f88 9
+src/app/history/page.tsx
+  s_291d3b2c23eff2::t_8725c0c3780095 1-5
+src/hooks/useTransactionHistory.ts
+  s_291d3b2c23eff2::t_e5d669a10a6784 38,49,60,72,83
+  s_291d3b2c23eff2::t_5a323cd97ccfec 127,159,193,225,259,290
+  s_291d3b2c23eff2::t_aea592fcac0d36 1-37,39-48,50-59,61-71,73-82,84-126,128-158,160-192,194-224,226-258,260-289,291-404
+src/lib/transaction-types.ts
+  s_291d3b2c23eff2::t_19eff640f828cb 1-23
+src/hooks/useWalletBalance.ts
+  s_12df35c224fa75::t_d6a84376648d5d 56
+  s_12df35c224fa75::t_cd41ccb7f71cc1 5
+src/components/shared/TxToastContainer.tsx
+  s_12df35c224fa75::t_2ff8eb8f314478 1-77
+src/components/shared/Web3Providers.tsx
+  s_12df35c224fa75::t_a0a499787b6fe4 7-8,15-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "84e5a017e1157f5a31239554fefc6cd2250bee92",
+  "prompts": {},
+  "sessions": {
+    "s_12df35c224fa75": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7504e48-76c0-4800-89f3-f833986449d7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "SofiAlfonso <asalfonso@eafit.edu.co>"
+    },
+    "s_291d3b2c23eff2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f887a461-02e4-4491-936f-eb3ca72bd3a7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "SofiAlfonso <asalfonso@eafit.edu.co>"
+    }
+  }
+}
