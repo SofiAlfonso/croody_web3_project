@@ -52,10 +52,9 @@ export function useEndAuction() {
 
       updateToast(toastId, "confirmed", "Auction closed!");
       return { success: true as const, txHash };
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : "Failed to close auction";
-      setError(message);
-      updateToast(toastId, "failed", message);
+    } catch {
+      setError("Failed to close auction");
+      updateToast(toastId, "failed", "Failed to close auction");
       return { success: false as const };
     } finally {
       setIsPending(false);

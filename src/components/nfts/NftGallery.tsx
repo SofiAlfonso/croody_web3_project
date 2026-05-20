@@ -162,7 +162,7 @@ function EmptyState({ search }: Readonly<{ search: string }>) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
       <div className="bg-jungle-50 flex h-16 w-16 items-center justify-center rounded-full">
-        <ImageOff className="text-jungle-300 h-8 w-8" />
+        <ImageOff className="text-jungle-500 h-8 w-8" />
       </div>
       <div className="text-jungle-900 text-xl font-semibold">No NFTs found</div>
       <div className="text-jungle-500 max-w-xs text-sm">

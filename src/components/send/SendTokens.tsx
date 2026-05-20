@@ -68,7 +68,7 @@ export default function SendTokens() {
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="space-y-6 rounded-2xl border border-neutral-200 bg-white p-8">
           <div>
-            <div className="mb-1 text-sm text-neutral-500">From Wallet</div>
+            <div className="mb-1 text-sm text-neutral-700">From Wallet</div>
             <div className="inline-flex items-center gap-3 rounded-lg bg-neutral-100 px-4 py-2 font-mono text-sm text-neutral-700">
               {shortWallet}
             </div>
@@ -149,11 +149,11 @@ export default function SendTokens() {
       >
         <div className="mt-4 space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm">
           <div className="flex justify-between">
-            <span className="text-neutral-500">Amount</span>
+            <span className="text-neutral-700">Amount</span>
             <span className="font-semibold text-neutral-900">{amount} CRD</span>
           </div>
           <div className="flex justify-between gap-4">
-            <span className="shrink-0 text-neutral-500">To</span>
+            <span className="shrink-0 text-neutral-700">To</span>
             <span className="truncate font-mono text-neutral-900">{recipient}</span>
           </div>
         </div>

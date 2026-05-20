@@ -104,7 +104,7 @@ export default function Dashboard() {
             </Link>
             <Link
               href="/history"
-              className="border-jungle-200 text-jungle-600 hover:bg-jungle-50 inline-flex rounded-lg border px-4 py-2 text-sm transition-colors"
+              className="border-jungle-100 text-jungle-900 hover:bg-jungle-100 inline-flex rounded-lg border px-4 py-2 text-sm transition-colors"
             >
               Transaction History
             </Link>

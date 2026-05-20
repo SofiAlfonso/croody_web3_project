@@ -111,10 +111,9 @@ export function useCreateAuction() {
         walletAddress: walletAddress ?? "",
       });
       return { success: true as const, txHash: createTxHash, auctionId };
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : "Failed to create auction";
-      setError(message);
-      updateToast(toastId, "failed", message);
+    } catch {
+      setError("Failed to create auction");
+      updateToast(toastId, "failed", "Failed to create auction");
       return { success: false as const };
     } finally {
       setIsPending(false);

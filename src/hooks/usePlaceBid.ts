@@ -89,10 +89,9 @@ export function usePlaceBid() {
         .catch(() => updateToast(toastId, "failed", "Bid transaction failed"));
 
       return { success: true as const, txHash: bidTxHash };
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : "Failed to place bid";
-      setError(message);
-      updateToast(toastId, "failed", message);
+    } catch {
+      setError("Failed to place bid");
+      updateToast(toastId, "failed", "Failed to place bid");
       return { success: false as const };
     } finally {
       setIsPending(false);

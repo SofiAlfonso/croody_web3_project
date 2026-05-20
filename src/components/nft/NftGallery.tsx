@@ -63,13 +63,13 @@ export default function NftGallery() {
         <div className="flex flex-col gap-4 sm:flex-row">
           {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="text-jungle-400 pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Search className="text-jungle-500 pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search by name or ID…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border-jungle-100 text-jungle-900 placeholder:text-jungle-400 focus:ring-gator-300 w-full rounded-lg border bg-white py-2.5 pr-4 pl-10 text-sm focus:ring-2 focus:outline-none"
+              className="border-jungle-100 text-jungle-900 placeholder:text-jungle-500 focus:ring-gator-300 w-full rounded-lg border bg-white py-2.5 pr-4 pl-10 text-sm focus:ring-2 focus:outline-none"
             />
           </div>
 
@@ -121,7 +121,7 @@ export default function NftGallery() {
                   </div>
                   <div className="p-4">
                     <div className="text-jungle-900 mb-1 truncate font-medium">{nft.name}</div>
-                    <div className="text-jungle-400 text-xs">ID: {nft.id}</div>
+                    <div className="text-jungle-500 text-xs">ID: {nft.id}</div>
                     {nft.collection && (
                       <div className="bg-jungle-50 text-jungle-500 mt-2 inline-block rounded-full px-2 py-0.5 text-xs">
                         {nft.collection}
@@ -162,7 +162,7 @@ function EmptyState({ search }: Readonly<{ search: string }>) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
       <div className="bg-jungle-50 flex h-16 w-16 items-center justify-center rounded-full">
-        <ImageOff className="text-jungle-300 h-8 w-8" />
+        <ImageOff className="text-jungle-500 h-8 w-8" />
       </div>
       <div className="text-jungle-900 text-xl font-semibold">No NFTs found</div>
       <div className="text-jungle-500 max-w-xs text-sm">

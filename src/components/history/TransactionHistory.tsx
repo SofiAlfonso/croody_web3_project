@@ -133,7 +133,7 @@ function TransactionRow({ record }: { record: TransactionRecord }) {
         </div>
         <div className="space-y-1">
           <TypeBadge type={record.type} />
-          <div className="flex items-center gap-1 text-sm text-neutral-500">
+          <div className="flex items-center gap-1 text-sm text-neutral-700">
             {isInbound ? (
               <>
                 <span>From:</span>
@@ -147,14 +147,14 @@ function TransactionRow({ record }: { record: TransactionRecord }) {
             )}
           </div>
           {record.auctionId && (
-            <div className="text-xs text-neutral-400">Auction #{record.auctionId}</div>
+            <div className="text-xs text-neutral-600">Auction #{record.auctionId}</div>
           )}
         </div>
       </div>
 
       <div className="flex flex-col items-end gap-1 text-right">
         <div className="text-sm font-semibold text-neutral-800">{formatAmount(record)}</div>
-        <div className="text-xs text-neutral-400">{formatDate(record.timestamp)}</div>
+        <div className="text-xs text-neutral-600">{formatDate(record.timestamp)}</div>
         <StatusBadge status={record.status} />
       </div>
     </div>
@@ -251,7 +251,7 @@ export default function TransactionHistory() {
         {/* Content */}
         <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
           {isLoading && (
-            <div className="flex items-center justify-center py-16 text-neutral-400">
+            <div className="flex items-center justify-center py-16 text-neutral-600">
               <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
               Loading transactions…
             </div>
@@ -263,7 +263,7 @@ export default function TransactionHistory() {
               <button
                 type="button"
                 onClick={() => refetch()}
-                className="mt-4 text-sm text-neutral-500 underline hover:text-neutral-700"
+                className="mt-4 text-sm text-neutral-700 underline hover:text-neutral-900"
               >
                 Try again
               </button>
@@ -273,7 +273,7 @@ export default function TransactionHistory() {
           {!isLoading && !error && filtered.length === 0 && (
             <div className="py-16 text-center">
               <Tag className="mx-auto mb-3 h-10 w-10 text-neutral-300" />
-              <div className="text-neutral-500 text-sm">
+              <div className="text-neutral-700 text-sm">
                 {data.length === 0
                   ? "No transactions found for this wallet."
                   : "No transactions match the selected filters."}
@@ -295,7 +295,7 @@ export default function TransactionHistory() {
 
           {!isLoading && !error && filtered.length > 0 && (
             <div>
-              <div className="border-b border-neutral-100 px-6 py-3 text-xs font-medium uppercase tracking-wide text-neutral-400">
+              <div className="border-b border-neutral-100 px-6 py-3 text-xs font-medium uppercase tracking-wide text-neutral-600">
                 {filtered.length} transaction{filtered.length !== 1 ? "s" : ""}
               </div>
               {filtered.map((record) => (
