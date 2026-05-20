@@ -1,0 +1,34 @@
+src/hooks/usePlaceBid.ts
+  s_291d3b2c23eff2::t_10db6e65ea2fec 30
+  s_291d3b2c23eff2::t_7ff211785efcd8 67-76
+  s_291d3b2c23eff2::t_611b5be5a44480 8-9
+src/components/dashboard/Dashboard.tsx
+  s_291d3b2c23eff2::t_d599a1e0e73241 98-111
+src/hooks/useCreateAuction.ts
+  s_291d3b2c23eff2::t_1d7fdba12e0908 94-104
+  s_291d3b2c23eff2::t_d69aa3b0f35dc5 36
+  s_291d3b2c23eff2::t_00ea18dcde6cf2 8-9
+src/hooks/useSendTokens.ts
+  s_291d3b2c23eff2::t_0513d206360021 68-76
+  s_291d3b2c23eff2::t_a29ec32d6ac16f 9
+  s_291d3b2c23eff2::t_4e1c3de5a14e9a 29
+src/hooks/useTransferNft.ts
+  s_291d3b2c23eff2::t_68ddb2bb856109 9
+  s_291d3b2c23eff2::t_827775f50ff096 137-145
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "0af8e1a9a16dad222a85a039edae22fcceab0c55",
+  "prompts": {},
+  "sessions": {
+    "s_291d3b2c23eff2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f887a461-02e4-4491-936f-eb3ca72bd3a7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "SofiAlfonso <asalfonso@eafit.edu.co>"
+    }
+  }
+}
